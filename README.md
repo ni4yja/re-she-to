@@ -16,14 +16,6 @@ Who gets translated? Whose voices reach Polish readers — and whose don't?
 
 Output: `data/bn_translations_all.csv` (~400k records)
 
-## Structure
-
-re-she-to/
-├── data/          # ignored by git — see above
-├── parse/         # data extraction scripts
-├── analysis/      # exploratory analysis
-└── viz/           # interactive visualization
-
 ## Status
 
 Work in progress.

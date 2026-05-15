@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>re-she-to</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="navbar-logo">resheto</span>
+    <span class="navbar-desc">przekłady na polskim rynku książki</span>
+  </div>
+  <div class="navbar-links">
+    <a class="navbar-link" href="https://liubuntu.tech" target="_blank">www</a>
+    <a class="navbar-link" href="https://github.com/ni4yja" target="_blank">github</a>
+    <a class="navbar-link" href="https://www.linkedin.com/in/liuba-kuibida/" target="_blank">linkedin</a>
+  </div>
+</nav>
+
+<div id="app">
+  <transition name="fade" mode="out-in">
+
+    <!-- screen 1: counter -->
+    <div class="screen" v-if="screen === 1" key="s1">
+      <div class="inner">
+        <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
+        <p class="subtitle">Liczymy na szczerość.</p>
+        <div class="divider"></div>
+
+        <div class="counter-row">
+          <button class="cbtn" @click="change(-1)" :disabled="count === 0" aria-label="mniej">−</button>
+          <div>
+            <div class="cnum">{{ count }}</div>
+            <div class="cword">{{ word }}</div>
+          </div>
+          <button class="cbtn" @click="change(1)" :disabled="count === 10" aria-label="więcej">+</button>
+        </div>
+
+        <p class="comment">{{ comment }}</p>
+
+        <div class="nav">
+          <button class="nbtn primary" @click="screen = 2">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 2: context -->
+    <div class="screen" v-else-if="screen === 2" key="s2">
+      <div class="inner">
+        <p class="next-title">
+          W 2025 roku co najmniej jedną książkę przeczytało 41% respondentów badania Biblioteki Narodowej. 59% — żadnej.
+          <a class="source-link" href="https://bn.org.pl/aktualnosci/6010-wskazniki-czytelnictwa-w-polsce-na-stabilnym-poziomie-najnowsze-badania-biblioteki-narodowej.html" target="_blank">(Biblioteka Narodowa, kwiecień 2026)</a>
+        </p>
+        <p class="next-body">
+          Ale jeśli już czytasz — skąd pochodzi ta książka? W Polsce co roku ukazuje się ponad 10 000 tytułów w tłumaczeniu. Ktoś zdecydował, które z nich trafią na półki.
+        </p>
+        <p class="next-body">Sprawdźmy — kto i jak.</p>
+
+        <div class="nav">
+          <button class="nbtn back" @click="screen = 1">← wróć</button>
+          <button class="nbtn primary" @click="screen = 3">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 3: one number -->
+    <div class="screen" v-else-if="screen === 3" key="s3">
+      <div class="inner">
+        <p class="subtitle">Zanim zaczniesz zgadywać — jedna liczba.</p>
+        <div class="divider"></div>
+        <div class="big-number">53%</div>
+        <p class="next-body">Tyle tłumaczeń na rynek polski pochodzi z języka angielskiego. Co druga przetłumaczona książka.</p>
+        <p class="next-body">A co z resztą świata?</p>
+        <div class="nav">
+          <button class="nbtn back" @click="screen = 2">← wróć</button>
+          <button class="nbtn primary" @click="screen = 4">sprawdź →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 4: placeholder -->
+    <div class="screen" v-else-if="screen === 4" key="s4">
+      <div class="inner">
+        <p class="next-title" style="color: #ccc;">[ następna sekcja ]</p>
+        <div class="nav" style="margin-top: 2rem;">
+          <button class="nbtn back" @click="screen = 3">← wróć</button>
+        </div>
+      </div>
+    </div>
+
+  </transition>
+</div>
+
+<script>
+const { createApp, ref, computed } = Vue;
+
+createApp({
+  setup() {
+    const screen = ref(1);
+    const count = ref(0);
+
+    const comments = {
+      0: "Zero. To też odpowiedź.",
+      1: "Jedna. Która?",
+      2: "Dwie. Już ciekawiej.",
+      3: "Trzy. Szacunek.",
+      4: "Cztery. Powyżej średniej, naprawdę.",
+      5: "Pięć. No to rozmawiamy.",
+      6: "Sześć. Serio?",
+      7: "Siedem. Okej, okej.",
+      8: "Osiem. Mhm.",
+      9: "Dziewięć. Jasne.",
+      10: "Dziesięć. Dobra, to pochwal się na Goodreads."
+    };
+
+    const word = computed(() => {
+      if (count.value === 1) return 'książka';
+      if (count.value >= 2 && count.value <= 4) return 'książki';
+      return 'książek';
+    });
+
+    const comment = computed(() => comments[count.value]);
+
+    function change(delta) {
+      count.value = Math.max(0, Math.min(count.value + delta, 10));
+    }
+
+    return { screen, count, word, comment, change };
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>

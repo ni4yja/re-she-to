@@ -1,0 +1,224 @@
+:root {
+  --accent: #3D3B8E;
+  --accent-light: #EEEEF8;
+  --text: #1a1a1a;
+  --muted: #888;
+  --border: #e0e0e0;
+  --bg: #fff;
+  --bg-hover: #f5f5f5;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  height: 52px;
+  border-bottom: 0.5px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.navbar-logo {
+  font-family: 'Bricolage Grotesque', Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.navbar-desc {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 16px;
+}
+
+.navbar-link {
+  font-size: 12px;
+  color: #aaa;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.navbar-link:hover { color: var(--accent); }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.inner {
+  max-width: 560px;
+  width: 100%;
+}
+
+.title {
+  font-family: 'Bricolage Grotesque', Helvetica, sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+}
+
+.divider {
+  width: 32px;
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 2rem;
+}
+
+.counter-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.cbtn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.cbtn:hover:not(:disabled) { background: var(--bg-hover); }
+.cbtn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+.cnum {
+  font-family: 'Bricolage Grotesque', Helvetica, sans-serif;
+  font-size: 64px;
+  font-weight: 400;
+  color: var(--accent);
+  min-width: 80px;
+  text-align: center;
+  line-height: 1;
+}
+
+.cword {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.comment {
+  min-height: 48px;
+  font-size: 15px;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  transition: opacity 0.3s;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.nbtn {
+  border: 0.5px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.nbtn:hover { background: var(--bg-hover); }
+
+.nbtn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.nbtn.primary:hover { background: #2f2d7a; }
+
+.nbtn.back {
+  color: var(--muted);
+  border-color: var(--border);
+}
+
+.nbtn.back:hover { background: var(--bg-hover); color: var(--text); }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.next-title {
+  font-family: 'Bricolage Grotesque', Helvetica, sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.next-body {
+  font-size: 16px;
+  color: #555;
+  line-height: 1.75;
+  margin-bottom: 1.25rem;
+}
+
+.source-link {
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.source-link:hover { color: var(--accent); }
+
+.big-number {
+  font-family: 'Bricolage Grotesque', Helvetica, sans-serif;
+  font-size: 96px;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
