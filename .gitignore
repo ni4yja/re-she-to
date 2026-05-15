@@ -1,0 +1,25 @@
+# large data files
+data/bibs-all.marc
+data/*.marc
+data/bn_translations_all.csv
+
+# generated data — too large for git
+# remove this line if csv is small enough to include
+# data/bn_translations_all.csv
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# jupyter
+.ipynb_checkpoints/
+
+# node
+node_modules/
+dist/
+
+# system
+.DS_Store
+Thumbs.db
