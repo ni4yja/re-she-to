@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RESHETO: Przekłady na polskim rynku książki</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-left">
+    <span class="navbar-logo">resheto</span>
+    <span class="navbar-desc">przekłady na polskim rynku książki</span>
+  </div>
+  <div class="navbar-links">
+    <a class="navbar-link" href="https://liubuntu.tech" target="_blank">www</a>
+    <a class="navbar-link" href="https://github.com/ni4yja" target="_blank">github</a>
+    <a class="navbar-link" href="https://www.linkedin.com/in/liuba-kuibida/" target="_blank">linkedin</a>
+  </div>
+</nav>
+
+<div id="app">
+  <transition name="fade" mode="out-in">
+
+    <!-- screen 1: counter -->
+    <div class="screen" v-if="screen === 1" key="s1">
+      <div class="inner">
+        <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
+        <p class="subtitle">Liczymy na szczerość.</p>
+        <div class="divider"></div>
+        <div class="counter-row">
+          <button class="cbtn" @click="change(-1)" :disabled="count === 0" aria-label="mniej">−</button>
+          <div>
+            <div class="cnum">{{ count }}</div>
+            <div class="cword">{{ word }}</div>
+          </div>
+          <button class="cbtn" @click="change(1)" :disabled="count === 10" aria-label="więcej">+</button>
+        </div>
+        <p class="comment">{{ comment }}</p>
+        <div class="nav">
+          <button class="nbtn primary" @click="screen = 2">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 2: context -->
+    <div class="screen" v-else-if="screen === 2" key="s2">
+      <div class="inner">
+        <p class="next-title">
+          W 2025 roku co najmniej jedną książkę przeczytało 41% respondentów badania Biblioteki Narodowej. 59% — żadnej.
+          <a class="source-link" href="https://bn.org.pl/aktualnosci/6010-wskazniki-czytelnictwa-w-polsce-na-stabilnym-poziomie-najnowsze-badania-biblioteki-narodowej.html" target="_blank">(Biblioteka Narodowa, kwiecień 2026)</a>
+        </p>
+        <p class="next-body">Ale jeśli już czytasz — skąd pochodzi ta książka? W Polsce co roku ukazuje się ponad 10 000 tytułów w tłumaczeniu. Ktoś zdecydował, które z nich trafią na półki.</p>
+        <p class="next-body">Sprawdźmy — kto i jak.</p>
+        <div class="nav">
+          <button class="nbtn back" @click="screen = 1">← wróć</button>
+          <button class="nbtn primary" @click="screen = 3">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 3: one number -->
+    <div class="screen" v-else-if="screen === 3" key="s3">
+      <div class="inner">
+        <p class="subtitle">Zanim zaczniemy — jedna liczba.</p>
+        <div class="divider"></div>
+        <div class="big-number">58.8%</div>
+        <p class="next-body">Ponad połowa przetłumaczonych książek wydanych w Polsce w 2025 roku pochodzi z języka angielskiego.</p>
+        <p class="next-body">A co z resztą świata?</p>
+        <div class="nav">
+          <button class="nbtn back" @click="screen = 2">← wróć</button>
+          <button class="nbtn primary" @click="screen = 4">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 4: question + bar chart -->
+    <div class="screen" v-else-if="screen === 4" key="s4">
+      <div class="inner wide">
+        <div v-if="!s4answered">
+          <p class="title">Jaki język jest na drugim miejscu po angielskim w 2025 roku?</p>
+          <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
+          <div class="options">
+            <button class="option-btn" v-for="opt in s4options" :key="opt.code"
+              @click="answerS4(opt.code)">
+              {{ opt.label }}
+            </button>
+          </div>
+          <div class="nav" style="margin-top: 2rem;">
+            <button class="nbtn back" @click="screen = 3">← wróć</button>
+          </div>
+        </div>
+        <div v-else>
+          <p class="s4-reaction">{{ s4reaction }}</p>
+          <div id="chart-s4" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+          <p class="chart-source">Źródło: Biblioteka Narodowa · 2025</p>
+          <div class="nav" style="margin-top: 1.5rem;">
+            <button class="nbtn back" @click="screen = 3">← wróć</button>
+            <button class="nbtn primary" @click="screen = 5">dalej →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 5: line chart -->
+    <div class="screen" v-else-if="screen === 5" key="s5">
+      <div class="inner wide">
+        <p class="title">A jak to wyglądało przez 25 lat?</p>
+        <div id="chart-s5" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+        <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
+        <div class="nav" style="margin-top: 1.5rem;">
+          <button class="nbtn back" @click="screen = 4">← wróć</button>
+          <button class="nbtn primary" @click="screen = 6">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 6: placeholder -->
+    <div class="screen" v-else-if="screen === 6" key="s6">
+      <div class="inner">
+        <p class="next-title" style="color: #ccc;">[ następna sekcja ]</p>
+        <div class="nav" style="margin-top: 2rem;">
+          <button class="nbtn back" @click="screen = 5">← wróć</button>
+        </div>
+      </div>
+    </div>
+
+  </transition>
+</div>
+
+<script>
+const { createApp, ref, computed, nextTick, watch } = Vue;
+
+createApp({
+  setup() {
+    const screen = ref(1);
+    const count = ref(0);
+    const s4answered = ref(false);
+    const s4reaction = ref('');
+
+    const comments = {
+      0: "Zero. To też odpowiedź.",
+      1: "Jedna. Która?",
+      2: "Dwie. Już ciekawiej.",
+      3: "Trzy. Szacunek.",
+      4: "Cztery. Powyżej średniej, naprawdę.",
+      5: "Pięć. No to rozmawiamy.",
+      6: "Sześć. Serio?",
+      7: "Siedem. Okej, okej.",
+      8: "Osiem. Mhm.",
+      9: "Dziewięć. Jasne.",
+      10: "Dziesięć. Dobra, to pochwal się na Goodreads."
+    };
+
+    const s4options = [
+      { code: 'ger', label: 'Niemiecki' },
+      { code: 'fre', label: 'Francuski' },
+      { code: 'jpn', label: 'Japoński' },
+      { code: 'rus', label: 'Rosyjski' },
+    ];
+
+    const s4reactions = {
+      ger: 'Nie, niemiecki jest dopiero czwarty — 494 tytuły w 2025 roku.',
+      fre: 'Nie, francuski na trzecim miejscu — 690 tytułów w 2025 roku.',
+      jpn: 'Tak! W 2025 roku japoński znalazł się na drugim miejscu — wydano 749 tytułów.',
+      rus: 'Nie, rosyjski nie znalazł się w top 5. Na piątym miejscu — włoski, 270 tytułów.',
+    };
+
+    const word = computed(() => {
+      if (count.value === 1) return 'książka';
+      if (count.value >= 2 && count.value <= 4) return 'książki';
+      return 'książek';
+    });
+
+    const comment = computed(() => comments[count.value]);
+
+    function change(delta) {
+      count.value = Math.max(0, Math.min(count.value + delta, 10));
+    }
+
+    async function answerS4(code) {
+      s4reaction.value = s4reactions[code];
+      s4answered.value = true;
+    }
+
+    watch(s4answered, async (val) => {
+      if (val) { await nextTick(); setTimeout(renderBarChart, 50); }
+    });
+
+    watch(screen, async (val) => {
+      if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 50); }
+      if (val === 5) { await nextTick(); setTimeout(renderLineChart, 50); }
+    });
+
+    async function renderBarChart() {
+      const res = await fetch('data/top_languages.json');
+      const langs = await res.json();
+      const top5 = langs.slice(0, 5);
+
+      const el = document.getElementById('chart-s4');
+      if (!el) return;
+      el.innerHTML = '';
+
+      const chart = Plot.plot({
+        marginLeft: 110,
+        marginRight: 70,
+        marginTop: 10,
+        marginBottom: 20,
+        height: 240,
+        style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
+        x: { label: null, tickFormat: d => d + '%', grid: true },
+        y: {
+          label: null,
+          domain: [...top5].sort((a,b) => a.percent_2025 - b.percent_2025).map(d => d.name)
+        },
+        marks: [
+          Plot.barX(top5, {
+            x: 'percent_2025',
+            y: 'name',
+            fill: d => d.code === 'eng' ? '#3D3B8E' : '#9896C8',
+            rx: 2,
+          }),
+          Plot.text(top5, {
+            x: 'percent_2025',
+            y: 'name',
+            text: d => d.percent_2025 + '%',
+            dx: 6,
+            textAnchor: 'start',
+            fill: '#1a1a1a',
+            fontSize: 12,
+          }),
+          Plot.ruleX([0]),
+        ],
+      });
+
+      el.appendChild(chart);
+    }
+
+    async function renderLineChart() {
+      const res = await fetch('data/top5_by_year.json');
+      const lineData = await res.json();
+
+      const el = document.getElementById('chart-s5');
+      if (!el) return;
+      el.innerHTML = '';
+
+      const colors = {
+        'japoński':  '#3D3B8E',
+        'francuski': '#D85A30',
+        'niemiecki': '#1D9E75',
+        'włoski':    '#BA7517',
+      };
+
+      const filtered = lineData.filter(d => d.name !== 'hiszpański');
+      const parsed = filtered.map(d => ({ ...d, year: +d.year }));
+
+      const chart = Plot.plot({
+        marginLeft: 50,
+        marginRight: 90,
+        marginTop: 20,
+        marginBottom: 30,
+        height: 300,
+        style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
+        x: { 
+          label: null,
+          tickFormat: d => d % 5 === 0 ? String(d) : '',
+        },
+        y: { label: '%', grid: true },
+        marks: [
+          Plot.line(parsed, {
+            x: 'year',
+            y: 'percent',
+            stroke: d => colors[d.name] || '#ccc',
+            strokeWidth: 2,
+          }),
+          Plot.text(parsed.filter(d => d.year === 2025), {
+            x: 'year',
+            y: 'percent',
+            text: 'name',
+            dx: 6,
+            textAnchor: 'start',
+            fill: d => colors[d.name] || '#888',
+            fontSize: 11,
+          }),
+        ],
+      });
+
+      el.appendChild(chart);
+    }
+
+    return { screen, count, word, comment, change, s4answered, s4reaction, s4options, answerS4 };
+  }
+}).mount('#app');
+</script>
+
+</body>
+</html>
