@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RESHETO: Przekłady na polskim rynku książki</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -108,7 +108,7 @@
       </div>
     </div>
 
-    <!-- screen 5: line chart -->
+    <!-- screen 5: line chart top 5 -->
     <div class="screen" v-else-if="screen === 5" key="s5">
       <div class="inner wide">
         <p class="title">A jak to wyglądało przez 25 lat?</p>
@@ -121,12 +121,64 @@
       </div>
     </div>
 
-    <!-- screen 6: placeholder -->
+    <!-- screen 6: Russian context -->
     <div class="screen" v-else-if="screen === 6" key="s6">
+      <div class="inner">
+        <h2 class="title">No dobra. A co w końcu z tym rosyjskim?</h2>
+        <p class="next-body" style="margin-top: 1.5rem;">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
+        <p class="next-body">Polski rynek książki zareagował.</p>
+        <div class="nav" style="margin-top: 2rem;">
+          <button class="nbtn back" @click="screen = 5">← wróć</button>
+          <button class="nbtn primary" @click="screen = 7">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 7: question ukr vs rus -->
+    <div class="screen" v-else-if="screen === 7" key="s7">
+      <div class="inner wide">
+        <div v-if="!s7answered">
+          <p class="title">W którym roku ukraiński po raz pierwszy wyprzedził rosyjski pod względem liczby wydanych tytułów?</p>
+          <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
+          <div class="options">
+            <button class="option-btn" v-for="opt in s7options" :key="opt.year"
+              @click="answerS7(opt.year)">
+              {{ opt.year }}
+            </button>
+          </div>
+          <div class="nav" style="margin-top: 2rem;">
+            <button class="nbtn back" @click="screen = 6">← wróć</button>
+          </div>
+        </div>
+        <div v-else>
+          <p class="s4-reaction">{{ s7reaction }}</p>
+          <p class="next-body" style="margin-top:0.75rem; font-style:italic;">{{ s7shared }}</p>
+          <div class="nav" style="margin-top: 2rem;">
+            <button class="nbtn back" @click="screen = 6">← wróć</button>
+            <button class="nbtn primary" @click="screen = 8">dalej →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 8: line chart ukr vs rus -->
+    <div class="screen" v-else-if="screen === 8" key="s8">
+      <div class="inner wide">
+        <div id="chart-s8" style="width:100%;min-height:320px;margin:1.5rem 0;"></div>
+        <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
+        <div class="nav" style="margin-top: 1.5rem;">
+          <button class="nbtn back" @click="screen = 7">← wróć</button>
+          <button class="nbtn primary" @click="screen = 9">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 9: placeholder -->
+    <div class="screen" v-else-if="screen === 9" key="s9">
       <div class="inner">
         <p class="next-title" style="color: #ccc;">[ następna sekcja ]</p>
         <div class="nav" style="margin-top: 2rem;">
-          <button class="nbtn back" @click="screen = 5">← wróć</button>
+          <button class="nbtn back" @click="screen = 8">← wróć</button>
         </div>
       </div>
     </div>
@@ -143,6 +195,8 @@ createApp({
     const count = ref(0);
     const s4answered = ref(false);
     const s4reaction = ref('');
+    const s7answered = ref(false);
+    const s7reaction = ref('');
 
     const comments = {
       0: "Zero. To też odpowiedź.",
@@ -172,6 +226,22 @@ createApp({
       rus: 'Nie, rosyjski nie znalazł się w top 5. Na piątym miejscu — włoski, 270 tytułów.',
     };
 
+    const s7options = [
+      { year: '2022' },
+      { year: '2023' },
+      { year: '2024' },
+      { year: '2025' },
+    ];
+
+    const s7reactions = {
+      '2022': 'Nie. W 2022 roku wydano 382 tytuły z rosyjskiego — i 290 z ukraińskiego.',
+      '2023': 'Nie. Rosyjski spadł, ale ukraiński też. Dystans pozostał.',
+      '2024': 'Nie. 148 rosyjskich, 134 ukraińskie.',
+      '2025': 'Nie. Nawet w 2025 roku — 111 rosyjskich, 100 ukraińskich.',
+    };
+
+    const s7shared = 'Ukraiński nigdy nie wyprzedził rosyjskiego. Mimo wojny.';
+
     const word = computed(() => {
       if (count.value === 1) return 'książka';
       if (count.value >= 2 && count.value <= 4) return 'książki';
@@ -189,6 +259,11 @@ createApp({
       s4answered.value = true;
     }
 
+    async function answerS7(year) {
+      s7reaction.value = s7reactions[year];
+      s7answered.value = true;
+    }
+
     watch(s4answered, async (val) => {
       if (val) { await nextTick(); setTimeout(renderBarChart, 50); }
     });
@@ -196,6 +271,7 @@ createApp({
     watch(screen, async (val) => {
       if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 50); }
       if (val === 5) { await nextTick(); setTimeout(renderLineChart, 50); }
+      if (val === 8) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
     });
 
     async function renderBarChart() {
@@ -267,7 +343,7 @@ createApp({
         marginBottom: 30,
         height: 300,
         style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
-        x: { 
+        x: {
           label: null,
           tickFormat: d => d % 5 === 0 ? String(d) : '',
         },
@@ -294,7 +370,65 @@ createApp({
       el.appendChild(chart);
     }
 
-    return { screen, count, word, comment, change, s4answered, s4reaction, s4options, answerS4 };
+    async function renderUkrRusChart() {
+      const res = await fetch('data/ukr_rus_by_year.json');
+      const data = await res.json();
+
+      const el = document.getElementById('chart-s8');
+      if (!el) return;
+      el.innerHTML = '';
+
+      const flat = [];
+      data.forEach(d => {
+        if (d.year && /^\d{4}$/.test(d.year)) {
+          flat.push({ year: +d.year, count: d.ukr || 0, lang: 'ukraiński' });
+          flat.push({ year: +d.year, count: d.rus || 0, lang: 'rosyjski' });
+        }
+      });
+
+      const maxCount = Math.max(...flat.map(d => d.count));
+
+      const chart = Plot.plot({
+        marginLeft: 50,
+        marginRight: 90,
+        marginTop: 20,
+        marginBottom: 30,
+        height: 300,
+        style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
+        x: { label: null, tickFormat: d => d % 5 === 0 ? String(d) : '' },
+        y: { label: 'tytuły', grid: true },
+        marks: [
+          Plot.ruleX([2022], { stroke: '#e0e0e0', strokeDasharray: '4,4', strokeWidth: 1.5 }),
+          Plot.text([{ year: 2022, val: maxCount * 0.95 }], {
+            x: 'year', y: 'val',
+            text: () => 'luty 2022',
+            dx: 6,
+            textAnchor: 'start',
+            fill: '#aaa',
+            fontSize: 11,
+          }),
+          Plot.line(flat, {
+            x: 'year',
+            y: 'count',
+            stroke: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#ccc',
+            strokeWidth: 2,
+          }),
+          Plot.text(flat.filter(d => d.year === 2025), {
+            x: 'year',
+            y: 'count',
+            text: 'lang',
+            dx: 6,
+            textAnchor: 'start',
+            fill: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#aaa',
+            fontSize: 11,
+          }),
+        ],
+      });
+
+      el.appendChild(chart);
+    }
+
+    return { screen, count, word, comment, change, s4answered, s4reaction, s4options, answerS4, s7answered, s7reaction, s7shared, s7options, answerS7 };
   }
 }).mount('#app');
 </script>
