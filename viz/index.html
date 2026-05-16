@@ -26,7 +26,8 @@
 </nav>
 
 <div id="app">
-  {<!-- screen 1: counter -->
+
+  <!-- screen 1: counter -->
   <div class="screen" v-if="screen === 1" key="s1">
     <div class="inner">
       <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
@@ -186,16 +187,33 @@
     </div>
   </div>
 
-  <!-- screen 9: placeholder -->
+  <!-- screen 9: authors lollipop -->
   <div class="screen" v-else-if="screen === 9" key="s9">
-    <div class="inner">
-      <p class="next-title" style="color: #ccc;">[ następna sekcja ]</p>
-      <div class="nav" style="margin-top: 2rem;">
+    <div class="inner wide">
+      <h2 class="title">Klasyka i kryminały. Żywi autorzy.</h2>
+      <p class="next-body" style="margin-top:1rem;margin-bottom:1.5rem;">Najchętniej tłumaczeni autorzy/autorki z rosyjskiego i ukraińskiego w ciągu ostatnich 25 lat.</p>
+      <div class="s9-col-heads">
+        <div class="s9-col-head s9-col-head--count">tyt.</div>
+        <div class="s9-col-head s9-col-head--bar">rok urodzenia →</div>
+        <div class="s9-col-head s9-col-head--name">autor/autorka</div>
+      </div>
+
+      <div id="chart-s9"></div>
+      <div class="s9-legend">
+        <div class="s9-legend-item">
+          <span class="s9-legend-dot" style="background:#3D3B8E;"></span>z ukraińskiego
+        </div>
+        <div class="s9-legend-item">
+          <span class="s9-legend-dot" style="background:#B4B2A9;"></span>z rosyjskiego
+        </div>
+      </div>
+      <p class="chart-source" style="margin-top:1rem;">Źródło: Biblioteka Narodowa · 2000–2025</p>
+      <div class="nav" style="margin-top:1.5rem;">
         <button class="nbtn back" @click="screen = 8">← wróć</button>
+        <button class="nbtn primary" @click="screen = 10">dalej →</button>
       </div>
     </div>
   </div>
-}
 
 </div>
 
@@ -289,6 +307,7 @@ createApp({
       if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 50); }
       if (val === 5) { await nextTick(); setTimeout(renderLineChart, 50); }
       if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
+      if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 50); }
     });
 
     async function renderBarChart() {
@@ -360,6 +379,53 @@ createApp({
         ],
       });
       el.appendChild(chart);
+    }
+
+    function renderAuthorsChart() {
+      const el = document.getElementById('chart-s9');
+      if (!el) return;
+      el.innerHTML = '';
+
+      const authors = [
+        { name: 'Fiodor Dostojewski', born: 1821, died: 1881, count: 150, lang: 'rus' },
+        { name: 'Lew Tołstoj', born: 1828, died: 1910, count: 111, lang: 'rus' },
+        { name: 'Anton Czechow', born: 1860, died: 1904, count: 88, lang: 'rus' },
+        { name: 'Michaił Bułhakow', born: 1891, died: 1940, count: 63, lang: 'rus' },
+        { name: 'Boris Akunin', born: 1956, died: null, count: 58, lang: 'rus' },
+        { name: 'Serhij Żadan', born: 1974, died: null, count: 34, lang: 'ukr' },
+        { name: 'Jurij Andruchowycz', born: 1960, died: null, count: 25, lang: 'ukr' },
+        { name: 'Andrij Lubka', born: 1987, died: null, count: 23, lang: 'ukr' },
+        { name: 'Wasyl Słapczuk', born: 1961, died: null, count: 15, lang: 'ukr' },
+        { name: 'Oksana Zabużko', born: 1960, died: null, count: 12, lang: 'ukr', feminine: true },
+      ];
+
+      const sorted = [...authors].sort((a, b) => b.count - a.count);
+      const minBorn = 1821;
+      const maxBorn = 1990;
+
+      sorted.forEach(a => {
+        const pct = (a.born - minBorn) / (maxBorn - minBorn);
+        const dotPct = Math.round(pct * 100);
+        const linePct = 100 - dotPct;
+        const col = a.lang === 'ukr' ? '#3D3B8E' : '#B4B2A9';
+        const textCol = a.lang === 'ukr' ? '#3D3B8E' : 'var(--muted)';
+        const yearsStr = a.died ? `${a.born}–${a.died}` : `ur. ${a.born}`;
+
+        const row = document.createElement('div');
+        row.className = 's9-row';
+        row.innerHTML = `
+          <div class="s9-count" style="color:${textCol};">${a.count}</div>
+          <div class="s9-bar">
+            <div class="s9-line" style="flex:${dotPct};"></div>
+            <div class="s9-dot" style="background:${col};"></div>
+            <div class="s9-line" style="flex:${linePct};"></div>
+          </div>
+          <div class="s9-author">
+            <div class="s9-name">${a.name}</div>
+            <div class="s9-years">${yearsStr}</div>
+          </div>`;
+        el.appendChild(row);
+      });
     }
 
     return { screen, count, word, comment, change, s4answered, s4reaction, s4options, answerS4, s7answered, s7reaction, s7shared, s7options, answerS7 };
