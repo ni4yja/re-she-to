@@ -186,11 +186,6 @@ body {
 
 .nbtn.back:hover { background: var(--bg-hover); color: var(--text); }
 
-.slide-up-enter-active { transition: opacity 0.4s, transform 0.4s; }
-.slide-up-leave-active { transition: opacity 0.3s, transform 0.3s; }
-.slide-up-enter-from { opacity: 0; transform: translateY(24px); }
-.slide-up-leave-to { opacity: 0; transform: translateY(-24px); }
-
 .next-title {
   font-family: 'Bricolage Grotesque', Helvetica, sans-serif;
   font-size: 22px;
@@ -268,3 +263,10 @@ body {
   color: #aaa;
   margin-top: 0.25rem;
 }
+
+.pub-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.pub-head { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 10px; }
+.pub-item { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; border-bottom: 0.5px solid var(--border); gap: 8px; }
+.pub-item:last-child { border-bottom: none; }
+.pub-name { color: #1a1a1a; font-size: 13px; line-height: 1.4; }
+.pub-count { color: #888; font-size: 12px; white-space: nowrap; }

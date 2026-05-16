@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RESHETO: Przekłady na polskim rynku książki</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
@@ -26,164 +26,177 @@
 </nav>
 
 <div id="app">
-  <transition name="fade" mode="out-in">
-
-    <!-- screen 1: counter -->
-    <div class="screen" v-if="screen === 1" key="s1">
-      <div class="inner">
-        <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
-        <p class="subtitle">Liczymy na szczerość.</p>
-        <div class="divider"></div>
-        <div class="counter-row">
-          <button class="cbtn" @click="change(-1)" :disabled="count === 0" aria-label="mniej">−</button>
-          <div>
-            <div class="cnum">{{ count }}</div>
-            <div class="cword">{{ word }}</div>
-          </div>
-          <button class="cbtn" @click="change(1)" :disabled="count === 10" aria-label="więcej">+</button>
+  {<!-- screen 1: counter -->
+  <div class="screen" v-if="screen === 1" key="s1">
+    <div class="inner">
+      <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
+      <p class="subtitle">Tylko szczere odpowiedzi.</p>
+      <div class="divider"></div>
+      <div class="counter-row">
+        <button class="cbtn" @click="change(-1)" :disabled="count === 0" aria-label="mniej">−</button>
+        <div>
+          <div class="cnum">{{ count }}</div>
+          <div class="cword">{{ word }}</div>
         </div>
-        <p class="comment">{{ comment }}</p>
-        <div class="nav">
-          <button class="nbtn primary" @click="screen = 2">dalej →</button>
+        <button class="cbtn" @click="change(1)" :disabled="count === 10" aria-label="więcej">+</button>
+      </div>
+      <p class="comment">{{ comment }}</p>
+      <div class="nav">
+        <button class="nbtn primary" @click="screen = 2">dalej →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- screen 2: context -->
+  <div class="screen" v-else-if="screen === 2" key="s2">
+    <div class="inner">
+      <p class="next-title">
+        W 2025 roku co najmniej jedną książkę przeczytało 41% respondentów badania Biblioteki Narodowej. 59% — żadnej.
+        <a class="source-link" href="https://bn.org.pl/aktualnosci/6010-wskazniki-czytelnictwa-w-polsce-na-stabilnym-poziomie-najnowsze-badania-biblioteki-narodowej.html" target="_blank">(Biblioteka Narodowa, kwiecień 2026)</a>
+      </p>
+      <p class="next-body">Ale jeśli już czytasz — skąd pochodzi ta książka? W Polsce co roku ukazuje się ponad 10 000 tytułów w tłumaczeniu. Ktoś zdecydował, które z nich trafią na półki.</p>
+      <p class="next-body">Sprawdźmy — kto i jak.</p>
+      <div class="nav">
+        <button class="nbtn back" @click="screen = 1">← wróć</button>
+        <button class="nbtn primary" @click="screen = 3">dalej →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- screen 3: one number -->
+  <div class="screen" v-else-if="screen === 3" key="s3">
+    <div class="inner">
+      <p class="subtitle">Zanim zaczniemy — jedna liczba.</p>
+      <div class="divider"></div>
+      <div class="big-number">58.8%</div>
+      <p class="next-body">Ponad połowa przetłumaczonych książek wydanych w Polsce w 2025 roku pochodzi z języka angielskiego.</p>
+      <p class="next-body">A co z resztą świata?</p>
+      <div class="nav">
+        <button class="nbtn back" @click="screen = 2">← wróć</button>
+        <button class="nbtn primary" @click="screen = 4">dalej →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- screen 4: question + bar chart -->
+  <div class="screen" v-else-if="screen === 4" key="s4">
+    <div class="inner wide">
+      <div v-if="!s4answered">
+        <p class="title">Jaki język jest na drugim miejscu po angielskim w 2025 roku?</p>
+        <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
+        <div class="options">
+          <button class="option-btn" v-for="opt in s4options" :key="opt.code" @click="answerS4(opt.code)">{{ opt.label }}</button>
+        </div>
+        <div class="nav" style="margin-top: 2rem;">
+          <button class="nbtn back" @click="screen = 3">← wróć</button>
+        </div>
+      </div>
+      <div v-else>
+        <p class="s4-reaction">{{ s4reaction }}</p>
+        <div id="chart-s4" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+        <p class="chart-source">Źródło: Biblioteka Narodowa · 2025</p>
+        <div class="nav" style="margin-top: 1.5rem;">
+          <button class="nbtn back" @click="screen = 3">← wróć</button>
+          <button class="nbtn primary" @click="screen = 5">dalej →</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- screen 2: context -->
-    <div class="screen" v-else-if="screen === 2" key="s2">
-      <div class="inner">
-        <p class="next-title">
-          W 2025 roku co najmniej jedną książkę przeczytało 41% respondentów badania Biblioteki Narodowej. 59% — żadnej.
-          <a class="source-link" href="https://bn.org.pl/aktualnosci/6010-wskazniki-czytelnictwa-w-polsce-na-stabilnym-poziomie-najnowsze-badania-biblioteki-narodowej.html" target="_blank">(Biblioteka Narodowa, kwiecień 2026)</a>
-        </p>
-        <p class="next-body">Ale jeśli już czytasz — skąd pochodzi ta książka? W Polsce co roku ukazuje się ponad 10 000 tytułów w tłumaczeniu. Ktoś zdecydował, które z nich trafią na półki.</p>
-        <p class="next-body">Sprawdźmy — kto i jak.</p>
-        <div class="nav">
-          <button class="nbtn back" @click="screen = 1">← wróć</button>
-          <button class="nbtn primary" @click="screen = 3">dalej →</button>
-        </div>
+  <!-- screen 5: line chart top 5 -->
+  <div class="screen" v-else-if="screen === 5" key="s5">
+    <div class="inner wide">
+      <p class="title">A jak to wyglądało przez 25 lat?</p>
+      <div id="chart-s5" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+      <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
+      <div class="nav" style="margin-top: 1.5rem;">
+        <button class="nbtn back" @click="screen = 4">← wróć</button>
+        <button class="nbtn primary" @click="screen = 6">dalej →</button>
       </div>
     </div>
+  </div>
 
-    <!-- screen 3: one number -->
-    <div class="screen" v-else-if="screen === 3" key="s3">
-      <div class="inner">
-        <p class="subtitle">Zanim zaczniemy — jedna liczba.</p>
-        <div class="divider"></div>
-        <div class="big-number">58.8%</div>
-        <p class="next-body">Ponad połowa przetłumaczonych książek wydanych w Polsce w 2025 roku pochodzi z języka angielskiego.</p>
-        <p class="next-body">A co z resztą świata?</p>
-        <div class="nav">
-          <button class="nbtn back" @click="screen = 2">← wróć</button>
-          <button class="nbtn primary" @click="screen = 4">dalej →</button>
-        </div>
+  <!-- screen 6: Russian context -->
+  <div class="screen" v-else-if="screen === 6" key="s6">
+    <div class="inner">
+      <h2 class="title">No dobra. A co w końcu z tym rosyjskim?</h2>
+      <p class="next-body" style="margin-top: 1.5rem;">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
+      <p class="next-body">Polski rynek książki zareagował.</p>
+      <div class="nav" style="margin-top: 2rem;">
+        <button class="nbtn back" @click="screen = 5">← wróć</button>
+        <button class="nbtn primary" @click="screen = 7">dalej →</button>
       </div>
     </div>
+  </div>
 
-    <!-- screen 4: question + bar chart -->
-    <div class="screen" v-else-if="screen === 4" key="s4">
-      <div class="inner wide">
-        <div v-if="!s4answered">
-          <p class="title">Jaki język jest na drugim miejscu po angielskim w 2025 roku?</p>
-          <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
-          <div class="options">
-            <button class="option-btn" v-for="opt in s4options" :key="opt.code"
-              @click="answerS4(opt.code)">
-              {{ opt.label }}
-            </button>
-          </div>
-          <div class="nav" style="margin-top: 2rem;">
-            <button class="nbtn back" @click="screen = 3">← wróć</button>
-          </div>
+  <!-- screen 7: question ukr vs rus + chart -->
+  <div class="screen" v-else-if="screen === 7" key="s7">
+    <div class="inner wide">
+      <div v-if="!s7answered">
+        <p class="title">W którym roku ukraiński po raz pierwszy wyprzedził rosyjski pod względem liczby wydanych tytułów?</p>
+        <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
+        <div class="options">
+          <button class="option-btn" v-for="opt in s7options" :key="opt.year" @click="answerS7(opt.year)">{{ opt.year }}</button>
         </div>
-        <div v-else>
-          <p class="s4-reaction">{{ s4reaction }}</p>
-          <div id="chart-s4" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
-          <p class="chart-source">Źródło: Biblioteka Narodowa · 2025</p>
-          <div class="nav" style="margin-top: 1.5rem;">
-            <button class="nbtn back" @click="screen = 3">← wróć</button>
-            <button class="nbtn primary" @click="screen = 5">dalej →</button>
-          </div>
+        <div class="nav" style="margin-top: 2rem;">
+          <button class="nbtn back" @click="screen = 6">← wróć</button>
         </div>
       </div>
-    </div>
-
-    <!-- screen 5: line chart top 5 -->
-    <div class="screen" v-else-if="screen === 5" key="s5">
-      <div class="inner wide">
-        <p class="title">A jak to wyglądało przez 25 lat?</p>
-        <div id="chart-s5" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+      <div v-else>
+        <p class="s4-reaction">{{ s7reaction }}</p>
+        <p class="next-body" style="margin-top:0.75rem; font-style:italic;">{{ s7shared }}</p>
+        <div id="chart-s7" style="width:100%;min-height:320px;margin:1.5rem 0;"></div>
         <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
         <div class="nav" style="margin-top: 1.5rem;">
-          <button class="nbtn back" @click="screen = 4">← wróć</button>
-          <button class="nbtn primary" @click="screen = 6">dalej →</button>
+          <button class="nbtn back" @click="screen = 6">← wróć</button>
+          <button class="nbtn primary" @click="screen = 8">dalej →</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- screen 6: Russian context -->
-    <div class="screen" v-else-if="screen === 6" key="s6">
-      <div class="inner">
-        <h2 class="title">No dobra. A co w końcu z tym rosyjskim?</h2>
-        <p class="next-body" style="margin-top: 1.5rem;">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
-        <p class="next-body">Polski rynek książki zareagował.</p>
-        <div class="nav" style="margin-top: 2rem;">
-          <button class="nbtn back" @click="screen = 5">← wróć</button>
-          <button class="nbtn primary" @click="screen = 7">dalej →</button>
+  <!-- screen 8: publishers -->
+  <div class="screen" v-else-if="screen === 8" key="s8">
+    <div class="inner wide">
+      <h2 class="title">Wydawnictwo to tylko biznes?</h2>
+      <p class="next-body" style="margin-top:1rem;margin-bottom:1.5rem;">W 2025 roku te wydawnictwa wydały książki tłumaczone z języka ukraińskiego i rosyjskiego.</p>
+      <div class="pub-cols">
+        <div>
+          <p class="pub-head" style="color:#3D3B8E;">Z ukraińskiego</p>
+          <div class="pub-item"><span class="pub-name">Warsztaty Kultury</span><span class="pub-count">9</span></div>
+          <div class="pub-item"><span class="pub-name">Timof Comics</span><span class="pub-count">2</span></div>
+          <div class="pub-item"><span class="pub-name">Pogranicze</span><span class="pub-count">2</span></div>
+          <div class="pub-item"><span class="pub-name">Wydawnictwo Czarne</span><span class="pub-count">2</span></div>
+          <div class="pub-item"><span class="pub-name">KEW</span><span class="pub-count">2</span></div>
+        </div>
+        <div>
+          <p class="pub-head" style="color:#888;">Z rosyjskiego</p>
+          <div class="pub-item"><span class="pub-name">Świat Książki</span><span class="pub-count">15</span></div>
+          <div class="pub-item"><span class="pub-name">Państwowy Instytut Wydawniczy</span><span class="pub-count">6</span></div>
+          <div class="pub-item"><span class="pub-name">Oficyna Wydawnicza ABA</span><span class="pub-count">5</span></div>
+          <div class="pub-item"><span class="pub-name">Stalker Books</span><span class="pub-count">4</span></div>
+          <div class="pub-item"><span class="pub-name">Insignis</span><span class="pub-count">4</span></div>
         </div>
       </div>
-    </div>
-
-    <!-- screen 7: question ukr vs rus -->
-    <div class="screen" v-else-if="screen === 7" key="s7">
-      <div class="inner wide">
-        <div v-if="!s7answered">
-          <p class="title">W którym roku ukraiński po raz pierwszy wyprzedził rosyjski pod względem liczby wydanych tytułów?</p>
-          <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
-          <div class="options">
-            <button class="option-btn" v-for="opt in s7options" :key="opt.year"
-              @click="answerS7(opt.year)">
-              {{ opt.year }}
-            </button>
-          </div>
-          <div class="nav" style="margin-top: 2rem;">
-            <button class="nbtn back" @click="screen = 6">← wróć</button>
-          </div>
-        </div>
-        <div v-else>
-          <p class="s4-reaction">{{ s7reaction }}</p>
-          <p class="next-body" style="margin-top:0.75rem; font-style:italic;">{{ s7shared }}</p>
-          <div class="nav" style="margin-top: 2rem;">
-            <button class="nbtn back" @click="screen = 6">← wróć</button>
-            <button class="nbtn primary" @click="screen = 8">dalej →</button>
-          </div>
-        </div>
+      <p class="chart-source" style="margin-top:1rem;">Źródło: Biblioteka Narodowa · 2025</p>
+      <div class="nav" style="margin-top: 1.5rem;">
+        <button class="nbtn back" @click="screen = 7">← wróć</button>
+        <button class="nbtn primary" @click="screen = 9">dalej →</button>
       </div>
     </div>
+  </div>
 
-    <!-- screen 8: line chart ukr vs rus -->
-    <div class="screen" v-else-if="screen === 8" key="s8">
-      <div class="inner wide">
-        <div id="chart-s8" style="width:100%;min-height:320px;margin:1.5rem 0;"></div>
-        <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
-        <div class="nav" style="margin-top: 1.5rem;">
-          <button class="nbtn back" @click="screen = 7">← wróć</button>
-          <button class="nbtn primary" @click="screen = 9">dalej →</button>
-        </div>
+  <!-- screen 9: placeholder -->
+  <div class="screen" v-else-if="screen === 9" key="s9">
+    <div class="inner">
+      <p class="next-title" style="color: #ccc;">[ następna sekcja ]</p>
+      <div class="nav" style="margin-top: 2rem;">
+        <button class="nbtn back" @click="screen = 8">← wróć</button>
       </div>
     </div>
+  </div>
+}
 
-    <!-- screen 9: placeholder -->
-    <div class="screen" v-else-if="screen === 9" key="s9">
-      <div class="inner">
-        <p class="next-title" style="color: #ccc;">[ następna sekcja ]</p>
-        <div class="nav" style="margin-top: 2rem;">
-          <button class="nbtn back" @click="screen = 8">← wróć</button>
-        </div>
-      </div>
-    </div>
-
-  </transition>
 </div>
 
 <script>
@@ -268,116 +281,65 @@ createApp({
       if (val) { await nextTick(); setTimeout(renderBarChart, 50); }
     });
 
+    watch(s7answered, async (val) => {
+      if (val) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
+    });
+
     watch(screen, async (val) => {
       if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 50); }
       if (val === 5) { await nextTick(); setTimeout(renderLineChart, 50); }
-      if (val === 8) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
+      if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
     });
 
     async function renderBarChart() {
       const res = await fetch('data/top_languages.json');
       const langs = await res.json();
       const top5 = langs.slice(0, 5);
-
       const el = document.getElementById('chart-s4');
       if (!el) return;
       el.innerHTML = '';
-
       const chart = Plot.plot({
-        marginLeft: 110,
-        marginRight: 70,
-        marginTop: 10,
-        marginBottom: 20,
-        height: 240,
+        marginLeft: 110, marginRight: 70, marginTop: 10, marginBottom: 20, height: 240,
         style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
         x: { label: null, tickFormat: d => d + '%', grid: true },
-        y: {
-          label: null,
-          domain: [...top5].sort((a,b) => a.percent_2025 - b.percent_2025).map(d => d.name)
-        },
+        y: { label: null, domain: [...top5].sort((a,b) => a.percent_2025 - b.percent_2025).map(d => d.name) },
         marks: [
-          Plot.barX(top5, {
-            x: 'percent_2025',
-            y: 'name',
-            fill: d => d.code === 'eng' ? '#3D3B8E' : '#9896C8',
-            rx: 2,
-          }),
-          Plot.text(top5, {
-            x: 'percent_2025',
-            y: 'name',
-            text: d => d.percent_2025 + '%',
-            dx: 6,
-            textAnchor: 'start',
-            fill: '#1a1a1a',
-            fontSize: 12,
-          }),
+          Plot.barX(top5, { x: 'percent_2025', y: 'name', fill: d => d.code === 'eng' ? '#3D3B8E' : '#9896C8', rx: 2 }),
+          Plot.text(top5, { x: 'percent_2025', y: 'name', text: d => d.percent_2025 + '%', dx: 6, textAnchor: 'start', fill: '#1a1a1a', fontSize: 12 }),
           Plot.ruleX([0]),
         ],
       });
-
       el.appendChild(chart);
     }
 
     async function renderLineChart() {
       const res = await fetch('data/top5_by_year.json');
       const lineData = await res.json();
-
       const el = document.getElementById('chart-s5');
       if (!el) return;
       el.innerHTML = '';
-
-      const colors = {
-        'japoński':  '#3D3B8E',
-        'francuski': '#D85A30',
-        'niemiecki': '#1D9E75',
-        'włoski':    '#BA7517',
-      };
-
+      const colors = { 'japoński': '#3D3B8E', 'francuski': '#D85A30', 'niemiecki': '#1D9E75', 'włoski': '#BA7517' };
       const filtered = lineData.filter(d => d.name !== 'hiszpański');
       const parsed = filtered.map(d => ({ ...d, year: +d.year }));
-
       const chart = Plot.plot({
-        marginLeft: 50,
-        marginRight: 90,
-        marginTop: 20,
-        marginBottom: 30,
-        height: 300,
+        marginLeft: 50, marginRight: 90, marginTop: 20, marginBottom: 30, height: 300,
         style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
-        x: {
-          label: null,
-          tickFormat: d => d % 5 === 0 ? String(d) : '',
-        },
+        x: { label: null, tickFormat: d => d % 5 === 0 ? String(d) : '' },
         y: { label: '%', grid: true },
         marks: [
-          Plot.line(parsed, {
-            x: 'year',
-            y: 'percent',
-            stroke: d => colors[d.name] || '#ccc',
-            strokeWidth: 2,
-          }),
-          Plot.text(parsed.filter(d => d.year === 2025), {
-            x: 'year',
-            y: 'percent',
-            text: 'name',
-            dx: 6,
-            textAnchor: 'start',
-            fill: d => colors[d.name] || '#888',
-            fontSize: 11,
-          }),
+          Plot.line(parsed, { x: 'year', y: 'percent', stroke: d => colors[d.name] || '#ccc', strokeWidth: 2 }),
+          Plot.text(parsed.filter(d => d.year === 2025), { x: 'year', y: 'percent', text: 'name', dx: 6, textAnchor: 'start', fill: d => colors[d.name] || '#888', fontSize: 11 }),
         ],
       });
-
       el.appendChild(chart);
     }
 
     async function renderUkrRusChart() {
       const res = await fetch('data/ukr_rus_by_year.json');
       const data = await res.json();
-
-      const el = document.getElementById('chart-s8');
+      const el = document.getElementById('chart-s7');
       if (!el) return;
       el.innerHTML = '';
-
       const flat = [];
       data.forEach(d => {
         if (d.year && /^\d{4}$/.test(d.year)) {
@@ -385,46 +347,18 @@ createApp({
           flat.push({ year: +d.year, count: d.rus || 0, lang: 'rosyjski' });
         }
       });
-
-      const maxCount = Math.max(...flat.map(d => d.count));
-
+      const data2025 = flat.filter(d => d.year === 2025);
       const chart = Plot.plot({
-        marginLeft: 50,
-        marginRight: 90,
-        marginTop: 20,
-        marginBottom: 30,
-        height: 300,
+        marginLeft: 50, marginRight: 110, marginTop: 20, marginBottom: 30, height: 300,
         style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
         x: { label: null, tickFormat: d => d % 5 === 0 ? String(d) : '' },
         y: { label: 'tytuły', grid: true },
         marks: [
-          Plot.ruleX([2022], { stroke: '#e0e0e0', strokeDasharray: '4,4', strokeWidth: 1.5 }),
-          Plot.text([{ year: 2022, val: maxCount * 0.95 }], {
-            x: 'year', y: 'val',
-            text: () => 'luty 2022',
-            dx: 6,
-            textAnchor: 'start',
-            fill: '#aaa',
-            fontSize: 11,
-          }),
-          Plot.line(flat, {
-            x: 'year',
-            y: 'count',
-            stroke: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#ccc',
-            strokeWidth: 2,
-          }),
-          Plot.text(flat.filter(d => d.year === 2025), {
-            x: 'year',
-            y: 'count',
-            text: 'lang',
-            dx: 6,
-            textAnchor: 'start',
-            fill: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#aaa',
-            fontSize: 11,
-          }),
+          Plot.ruleX([2022], { stroke: '#e03c31', strokeWidth: 1, strokeDasharray: '4 2' }),
+          Plot.line(flat, { x: 'year', y: 'count', stroke: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#ccc', strokeWidth: 2 }),
+          Plot.text(data2025, { x: 'year', y: 'count', text: d => `${d.lang} (${d.count})`, dx: 6, textAnchor: 'start', fill: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#aaa', fontSize: 11 }),
         ],
       });
-
       el.appendChild(chart);
     }
 
