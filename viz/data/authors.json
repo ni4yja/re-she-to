@@ -1,0 +1,12 @@
+[
+  { "name": "Fiodor Dostojewski", "born": 1821, "died": 1881, "count": 150, "lang": "rus" },
+  { "name": "Lew Tołstoj", "born": 1828, "died": 1910, "count": 111, "lang": "rus" },
+  { "name": "Anton Czechow", "born": 1860, "died": 1904, "count": 88, "lang": "rus" },
+  { "name": "Michaił Bułhakow", "born": 1891, "died": 1940, "count": 63, "lang": "rus" },
+  { "name": "Boris Akunin", "born": 1956, "died": null, "count": 58, "lang": "rus" },
+  { "name": "Serhij Żadan", "born": 1974, "died": null, "count": 34, "lang": "ukr" },
+  { "name": "Jurij Andruchowycz", "born": 1960, "died": null, "count": 25, "lang": "ukr" },
+  { "name": "Andrij Lubka", "born": 1987, "died": null, "count": 23, "lang": "ukr" },
+  { "name": "Wasyl Słapczuk", "born": 1961, "died": null, "count": 15, "lang": "ukr" },
+  { "name": "Oksana Zabużko", "born": 1960, "died": null, "count": 12, "lang": "ukr", "feminine": true }
+]

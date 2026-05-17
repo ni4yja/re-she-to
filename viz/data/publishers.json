@@ -1,0 +1,12 @@
+[
+  { "name": "Warsztaty Kultury", "count": 9, "lang": "ukr" },
+  { "name": "Timof Comics", "count": 2, "lang": "ukr" },
+  { "name": "Pogranicze", "count": 2, "lang": "ukr" },
+  { "name": "Wydawnictwo Czarne", "count": 2, "lang": "ukr" },
+  { "name": "KEW", "count": 2, "lang": "ukr" },
+  { "name": "Świat Książki", "count": 15, "lang": "rus" },
+  { "name": "Państwowy Instytut Wydawniczy", "count": 6, "lang": "rus" },
+  { "name": "Oficyna Wydawnicza ABA", "count": 5, "lang": "rus" },
+  { "name": "Stalker Books", "count": 4, "lang": "rus" },
+  { "name": "Insignis", "count": 4, "lang": "rus" }
+]

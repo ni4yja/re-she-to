@@ -84,19 +84,19 @@
     <div class="inner wide">
       <div v-if="!s4answered">
         <p class="title">Jaki język jest na drugim miejscu po angielskim w 2025 roku?</p>
-        <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
+        <p class="subtitle subtitle--quiz">Jeden wybór.</p>
         <div class="options">
           <button class="option-btn" v-for="opt in s4options" :key="opt.code" @click="answerS4(opt.code)">{{ opt.label }}</button>
         </div>
-        <div class="nav" style="margin-top: 2rem;">
+        <div class="nav nav--mt-2">
           <button class="nbtn back" @click="screen = 3">← wróć</button>
         </div>
       </div>
       <div v-else>
         <p class="s4-reaction">{{ s4reaction }}</p>
-        <div id="chart-s4" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+        <div id="chart-s4"></div>
         <p class="chart-source">Źródło: Biblioteka Narodowa · 2025</p>
-        <div class="nav" style="margin-top: 1.5rem;">
+        <div class="nav nav--mt">
           <button class="nbtn back" @click="screen = 3">← wróć</button>
           <button class="nbtn primary" @click="screen = 5">dalej →</button>
         </div>
@@ -108,9 +108,9 @@
   <div class="screen" v-else-if="screen === 5" key="s5">
     <div class="inner wide">
       <p class="title">A jak to wyglądało przez 25 lat?</p>
-      <div id="chart-s5" style="width:100%;min-height:300px;margin:1.5rem 0;"></div>
+      <div id="chart-s5"></div>
       <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
-      <div class="nav" style="margin-top: 1.5rem;">
+      <div class="nav nav--mt">
         <button class="nbtn back" @click="screen = 4">← wróć</button>
         <button class="nbtn primary" @click="screen = 6">dalej →</button>
       </div>
@@ -121,9 +121,9 @@
   <div class="screen" v-else-if="screen === 6" key="s6">
     <div class="inner">
       <h2 class="title">No dobra. A co w końcu z tym rosyjskim?</h2>
-      <p class="next-body" style="margin-top: 1.5rem;">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
+      <p class="next-body next-body--mt">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
       <p class="next-body">Polski rynek książki zareagował.</p>
-      <div class="nav" style="margin-top: 2rem;">
+      <div class="nav nav--mt-2">
         <button class="nbtn back" @click="screen = 5">← wróć</button>
         <button class="nbtn primary" @click="screen = 7">dalej →</button>
       </div>
@@ -135,20 +135,20 @@
     <div class="inner wide">
       <div v-if="!s7answered">
         <p class="title">W którym roku ukraiński po raz pierwszy wyprzedził rosyjski pod względem liczby wydanych tytułów?</p>
-        <p class="subtitle" style="margin-bottom: 2rem;">Jeden wybór.</p>
+        <p class="subtitle subtitle--quiz">Jeden wybór.</p>
         <div class="options">
           <button class="option-btn" v-for="opt in s7options" :key="opt.year" @click="answerS7(opt.year)">{{ opt.year }}</button>
         </div>
-        <div class="nav" style="margin-top: 2rem;">
+        <div class="nav nav--mt-2">
           <button class="nbtn back" @click="screen = 6">← wróć</button>
         </div>
       </div>
       <div v-else>
         <p class="s4-reaction">{{ s7reaction }}</p>
-        <p class="next-body" style="margin-top:0.75rem; font-style:italic;">{{ s7shared }}</p>
-        <div id="chart-s7" style="width:100%;min-height:320px;margin:1.5rem 0;"></div>
+        <p class="next-body next-body--shared">{{ s7shared }}</p>
+        <div id="chart-s7"></div>
         <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
-        <div class="nav" style="margin-top: 1.5rem;">
+        <div class="nav nav--mt">
           <button class="nbtn back" @click="screen = 6">← wróć</button>
           <button class="nbtn primary" @click="screen = 8">dalej →</button>
         </div>
@@ -160,27 +160,10 @@
   <div class="screen" v-else-if="screen === 8" key="s8">
     <div class="inner wide">
       <h2 class="title">Wydawnictwo to tylko biznes?</h2>
-      <p class="next-body" style="margin-top:1rem;margin-bottom:1.5rem;">W 2025 roku te wydawnictwa wydały książki tłumaczone z języka ukraińskiego i rosyjskiego.</p>
-      <div class="pub-cols">
-        <div>
-          <p class="pub-head" style="color:#3D3B8E;">Z ukraińskiego</p>
-          <div class="pub-item"><span class="pub-name">Warsztaty Kultury</span><span class="pub-count">9</span></div>
-          <div class="pub-item"><span class="pub-name">Timof Comics</span><span class="pub-count">2</span></div>
-          <div class="pub-item"><span class="pub-name">Pogranicze</span><span class="pub-count">2</span></div>
-          <div class="pub-item"><span class="pub-name">Wydawnictwo Czarne</span><span class="pub-count">2</span></div>
-          <div class="pub-item"><span class="pub-name">KEW</span><span class="pub-count">2</span></div>
-        </div>
-        <div>
-          <p class="pub-head" style="color:#888;">Z rosyjskiego</p>
-          <div class="pub-item"><span class="pub-name">Świat Książki</span><span class="pub-count">15</span></div>
-          <div class="pub-item"><span class="pub-name">Państwowy Instytut Wydawniczy</span><span class="pub-count">6</span></div>
-          <div class="pub-item"><span class="pub-name">Oficyna Wydawnicza ABA</span><span class="pub-count">5</span></div>
-          <div class="pub-item"><span class="pub-name">Stalker Books</span><span class="pub-count">4</span></div>
-          <div class="pub-item"><span class="pub-name">Insignis</span><span class="pub-count">4</span></div>
-        </div>
-      </div>
-      <p class="chart-source" style="margin-top:1rem;">Źródło: Biblioteka Narodowa · 2025</p>
-      <div class="nav" style="margin-top: 1.5rem;">
+      <p class="next-body next-body--intro">W 2025 roku te wydawnictwa wydały książki tłumaczone z języka ukraińskiego i rosyjskiego.</p>
+      <div id="pub-cols" class="pub-cols"></div>
+      <p class="chart-source chart-source--mt">Źródło: Biblioteka Narodowa · 2025</p>
+      <div class="nav nav--mt">
         <button class="nbtn back" @click="screen = 7">← wróć</button>
         <button class="nbtn primary" @click="screen = 9">dalej →</button>
       </div>
@@ -191,7 +174,7 @@
   <div class="screen" v-else-if="screen === 9" key="s9">
     <div class="inner wide">
       <h2 class="title">Klasyka i kryminały. Żywi autorzy.</h2>
-      <p class="next-body" style="margin-top:1rem;margin-bottom:1.5rem;">Najchętniej tłumaczeni autorzy/autorki z rosyjskiego i ukraińskiego w ciągu ostatnich 25 lat.</p>
+      <p class="next-body next-body--intro">Najchętniej tłumaczeni autorzy/autorki z rosyjskiego i ukraińskiego w ciągu ostatnich 25 lat.</p>
       <div class="s9-col-heads">
         <div class="s9-col-head s9-col-head--count">tyt.</div>
         <div class="s9-col-head s9-col-head--bar">rok urodzenia →</div>
@@ -201,14 +184,14 @@
       <div id="chart-s9"></div>
       <div class="s9-legend">
         <div class="s9-legend-item">
-          <span class="s9-legend-dot" style="background:#3D3B8E;"></span>z ukraińskiego
+          <span class="s9-legend-dot s9-legend-dot--ukr"></span>z ukraińskiego
         </div>
         <div class="s9-legend-item">
-          <span class="s9-legend-dot" style="background:#B4B2A9;"></span>z rosyjskiego
+          <span class="s9-legend-dot s9-legend-dot--rus"></span>z rosyjskiego
         </div>
       </div>
-      <p class="chart-source" style="margin-top:1rem;">Źródło: Biblioteka Narodowa · 2000–2025</p>
-      <div class="nav" style="margin-top:1.5rem;">
+      <p class="chart-source chart-source--mt">Źródło: Biblioteka Narodowa · 2000–2025</p>
+      <div class="nav nav--mt">
         <button class="nbtn back" @click="screen = 8">← wróć</button>
         <button class="nbtn primary" @click="screen = 10">dalej →</button>
       </div>
@@ -307,6 +290,7 @@ createApp({
       if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 50); }
       if (val === 5) { await nextTick(); setTimeout(renderLineChart, 50); }
       if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
+      if (val === 8) { await nextTick(); setTimeout(renderPublishersChart, 50); }
       if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 50); }
     });
 
@@ -381,43 +365,61 @@ createApp({
       el.appendChild(chart);
     }
 
-    function renderAuthorsChart() {
+    async function renderPublishersChart() {
+      const el = document.getElementById('pub-cols');
+      if (!el) return;
+      el.innerHTML = '';
+
+      const res = await fetch('data/publishers.json');
+      const publishers = await res.json();
+
+      const groups = [
+        { lang: 'ukr', label: 'Z ukraińskiego', cls: 'pub-head--ukr' },
+        { lang: 'rus', label: 'Z rosyjskiego', cls: 'pub-head--rus' },
+      ];
+
+      groups.forEach(({ lang, label, cls }) => {
+        const col = document.createElement('div');
+        const head = document.createElement('p');
+        head.className = `pub-head ${cls}`;
+        head.textContent = label;
+        col.appendChild(head);
+        publishers.filter(p => p.lang === lang).forEach(p => {
+          const item = document.createElement('div');
+          item.className = 'pub-item';
+          item.innerHTML = `<span class="pub-name">${p.name}</span><span class="pub-count">${p.count}</span>`;
+          col.appendChild(item);
+        });
+        el.appendChild(col);
+      });
+    }
+
+    async function renderAuthorsChart() {
       const el = document.getElementById('chart-s9');
       if (!el) return;
       el.innerHTML = '';
 
-      const authors = [
-        { name: 'Fiodor Dostojewski', born: 1821, died: 1881, count: 150, lang: 'rus' },
-        { name: 'Lew Tołstoj', born: 1828, died: 1910, count: 111, lang: 'rus' },
-        { name: 'Anton Czechow', born: 1860, died: 1904, count: 88, lang: 'rus' },
-        { name: 'Michaił Bułhakow', born: 1891, died: 1940, count: 63, lang: 'rus' },
-        { name: 'Boris Akunin', born: 1956, died: null, count: 58, lang: 'rus' },
-        { name: 'Serhij Żadan', born: 1974, died: null, count: 34, lang: 'ukr' },
-        { name: 'Jurij Andruchowycz', born: 1960, died: null, count: 25, lang: 'ukr' },
-        { name: 'Andrij Lubka', born: 1987, died: null, count: 23, lang: 'ukr' },
-        { name: 'Wasyl Słapczuk', born: 1961, died: null, count: 15, lang: 'ukr' },
-        { name: 'Oksana Zabużko', born: 1960, died: null, count: 12, lang: 'ukr', feminine: true },
-      ];
+      const res = await fetch('data/authors.json');
+      const authors = await res.json();
 
       const sorted = [...authors].sort((a, b) => b.count - a.count);
-      const minBorn = 1821;
-      const maxBorn = 1990;
+      const minBorn = Math.min(...authors.map(a => a.born));
+      const maxBorn = Math.max(...authors.map(a => a.born));
 
       sorted.forEach(a => {
         const pct = (a.born - minBorn) / (maxBorn - minBorn);
         const dotPct = Math.round(pct * 100);
         const linePct = 100 - dotPct;
-        const col = a.lang === 'ukr' ? '#3D3B8E' : '#B4B2A9';
-        const textCol = a.lang === 'ukr' ? '#3D3B8E' : 'var(--muted)';
+        const langCls = a.lang === 'ukr' ? 'ukr' : 'rus';
         const yearsStr = a.died ? `${a.born}–${a.died}` : `ur. ${a.born}`;
 
         const row = document.createElement('div');
         row.className = 's9-row';
         row.innerHTML = `
-          <div class="s9-count" style="color:${textCol};">${a.count}</div>
+          <div class="s9-count s9-count--${langCls}">${a.count}</div>
           <div class="s9-bar">
             <div class="s9-line" style="flex:${dotPct};"></div>
-            <div class="s9-dot" style="background:${col};"></div>
+            <div class="s9-dot s9-dot--${langCls}"></div>
             <div class="s9-line" style="flex:${linePct};"></div>
           </div>
           <div class="s9-author">
