@@ -405,6 +405,8 @@ body {
 
 .s9-author {
   flex: 1;
+  display: flex;
+  gap: 0.5rem;
   padding-left: 10px;
 }
 
