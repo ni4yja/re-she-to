@@ -181,6 +181,45 @@ async function renderLineChart() {
   });
 }
 
+async function renderAuthorsChart() {
+  const el = document.getElementById('chart-s9');
+  if (!el || el.dataset.rendered) return;
+  el.dataset.rendered = '1';
+  el.innerHTML = '';
+
+  const res = await fetch('data/authors.json');
+  const authors = await res.json();
+
+  const sorted = [...authors].sort((a, b) => b.count - a.count);
+  const minBorn = Math.min(...authors.map(a => a.born));
+  const maxBorn = Math.max(...authors.map(a => a.born));
+
+  sorted.forEach((a, i) => {
+    const pct = (a.born - minBorn) / (maxBorn - minBorn);
+    const dotPct = Math.round(pct * 100);
+    const linePct = 100 - dotPct;
+    const langCls = a.lang === 'ukr' ? 'ukr' : 'rus';
+    const yearsStr = a.died ? `${a.born}–${a.died}` : `ur. ${a.born}`;
+
+    const row = document.createElement('div');
+    row.className = 's9-row';
+    row.innerHTML = `
+      <div class="s9-count s9-count--${langCls}">${a.count}</div>
+      <div class="s9-bar">
+        <div class="s9-line" style="flex:${dotPct};"></div>
+        <div class="s9-dot s9-dot--${langCls}"></div>
+        <div class="s9-line" style="flex:${linePct};"></div>
+      </div>
+      <div class="s9-author">
+        <div class="s9-name">${a.name}</div>
+        <div class="s9-years">${yearsStr}</div>
+      </div>`;
+    el.appendChild(row);
+
+    setTimeout(() => row.classList.add('s9-row--visible'), i * 50);
+  });
+}
+
 async function renderUkrRusChart() {
   const res = await fetch('data/ukr_rus_by_year.json');
   const data = await res.json();

@@ -231,8 +231,8 @@
         <h2 class="title">Książki, których już nie przeczytasz. Ich autorów zabiła Rosja.</h2>
         <div class="divider"></div>
         <div class="big-number">289 osób</div>
-        <p class="next-body">Projekt „Niedopisani” dokumentuje ofiary z kręgu literatury — pisarzy, poetów, tłumaczy, redaktorów, wydawców, bibliotekarzy i badaczy. Od 2014 roku ukraińska kultura traci nie tylko ludzi. Traci głosy, których już nikt nie zastąpi.</p>
-        <p class="next-body"><a class="source-link" href="https://www.facebook.com/nedopysani.project/" target="_blank">Недописані</a></p>
+        <p class="next-body">Projekt „Niedopisani" dokumentuje ofiary z kręgu literatury — pisarzy, poetów, tłumaczy, redaktorów, wydawców, bibliotekarzy i badaczy. Od 2014 roku ukraińska kultura traci nie tylko ludzi. Traci głosy, których już nikt nie zastąpi.</p>
+        <p class="next-body"><a class="source-link" href="https://www.facebook.com/nedopysani.project/" target="_blank">Niedopisani</a></p>
         <div class="nav nav--mt-2">
           <button class="nbtn back" @click="screen = 9">← wróć</button>
           <button class="nbtn primary" @click="screen = 11">dalej →</button>
@@ -252,6 +252,28 @@
         <a class="source-link" href="https://krytykapolityczna.pl/wydawnictwo/patrzac-na-kobiety-patrzac-na-wojne-wiktoria-amelina/" target="_blank">krytykapolityczna.pl</a>
         <div class="nav nav--mt-2">
           <button class="nbtn back" @click="screen = 10">← wróć</button>
+          <button class="nbtn primary" @click="screen = 12">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 12: closing counter -->
+    <div class="screen" v-else-if="screen === 12" key="s12">
+      <div class="inner">
+        <h2 class="title">Ile książek przeczytasz w 2026?</h2>
+        <p class="subtitle">Skąd będą pochodzić?</p>
+        <div class="divider"></div>
+        <div class="counter-row">
+          <button class="cbtn" @click="change12(-1)" :disabled="count12 === 0" aria-label="mniej">−</button>
+          <div>
+            <div class="cnum">{{ count12 }}</div>
+            <div class="cword">{{ word12 }}</div>
+          </div>
+          <button class="cbtn" @click="change12(1)" :disabled="count12 === 10" aria-label="więcej">+</button>
+        </div>
+        <p class="comment">{{ comment12 }}</p>
+        <div class="nav nav--mt-2">
+          <button class="nbtn back" @click="screen = 1">← od początku</button>
         </div>
       </div>
     </div>
@@ -265,12 +287,9 @@ const { createApp, ref, computed, nextTick, watch } = Vue;
 createApp({
   setup() {
     const screen = ref(1);
-    const count = ref(0);
-    const s4answered = ref(false);
-    const s4reaction = ref('');
-    const s7answered = ref(false);
-    const s7reaction = ref('');
 
+    // screen 1 counter
+    const count = ref(0);
     const comments = {
       0: "Zero. To też odpowiedź.",
       1: "Jedna. Która?",
@@ -284,60 +303,83 @@ createApp({
       9: "Dziewięć. Jasne.",
       10: "Dziesięć. Dobra, to pochwal się na Goodreads."
     };
+    const word = computed(() => {
+      if (count.value === 1) return 'książka';
+      if (count.value >= 2 && count.value <= 4) return 'książki';
+      return 'książek';
+    });
+    const comment = computed(() => comments[count.value]);
+    function change(delta) {
+      count.value = Math.max(0, Math.min(count.value + delta, 10));
+    }
 
+    // screen 12 counter
+    const count12 = ref(0);
+    const comments12 = {
+      0: "Zero. Jeszcze pół roku.",
+      1: "Jedna. Skąd ją wzięłaś/-eś?",
+      2: "Dwie. Z ilu języków?",
+      3: "Trzy. Kupione czy z biblioteki?",
+      4: "Cztery. Kto je przetłumaczył/-a?",
+      5: "Pięć. Z jak daleka?",
+      6: "Sześć. A ile w oryginale?",
+      7: "Siedem. Ile z tego w tłumaczeniu?",
+      8: "Osiem. Skąd?",
+      9: "Dziewięć. Dobrze.",
+      10: "Dziesięć. Może zostaniemy znajomymi na Goodreads?"
+    };
+    const word12 = computed(() => {
+      if (count12.value === 1) return 'książka';
+      if (count12.value >= 2 && count12.value <= 4) return 'książki';
+      return 'książek';
+    });
+    const comment12 = computed(() => comments12[count12.value]);
+    function change12(delta) {
+      count12.value = Math.max(0, Math.min(count12.value + delta, 10));
+    }
+
+    // quiz s4
+    const s4answered = ref(false);
+    const s4reaction = ref('');
     const s4options = [
       { code: 'ger', label: 'Niemiecki' },
       { code: 'fre', label: 'Francuski' },
       { code: 'jpn', label: 'Japoński' },
       { code: 'rus', label: 'Rosyjski' },
     ];
-
     const s4reactions = {
       ger: 'Nie, niemiecki jest dopiero czwarty — 494 tytuły w 2025 roku.',
       fre: 'Nie, francuski na trzecim miejscu — 690 tytułów w 2025 roku.',
       jpn: 'Tak! W 2025 roku japoński znalazł się na drugim miejscu — wydano 762 tytuły.',
       rus: 'Nie, rosyjski nie znalazł się w top 5. Na piątym miejscu — włoski, 270 tytułów.',
     };
+    async function answerS4(code) {
+      s4reaction.value = s4reactions[code];
+      s4answered.value = true;
+    }
 
+    // quiz s7
+    const s7answered = ref(false);
+    const s7reaction = ref('');
+    const s7shared = 'Ukraiński nigdy nie wyprzedził rosyjskiego. Mimo wojny.';
     const s7options = [
       { year: '2022' },
       { year: '2023' },
       { year: '2024' },
       { year: '2025' },
     ];
-
     const s7reactions = {
       '2022': 'Nie. W 2022 roku wydano 382 tytuły z rosyjskiego — i 290 z ukraińskiego.',
       '2023': 'Nie. Rosyjski spadł, ale ukraiński też. Dystans pozostał.',
       '2024': 'Nie. 148 rosyjskich, 134 ukraińskie.',
       '2025': 'Nie. Nawet w 2025 roku — 111 rosyjskich, 100 ukraińskich.',
     };
-
-    const s7shared = 'Ukraiński nigdy nie wyprzedził rosyjskiego. Mimo wojny.';
-
-    const word = computed(() => {
-      if (count.value === 1) return 'książka';
-      if (count.value >= 2 && count.value <= 4) return 'książki';
-      return 'książek';
-    });
-
-    const comment = computed(() => comments[count.value]);
-
-    function change(delta) {
-      count.value = Math.max(0, Math.min(count.value + delta, 10));
-    }
-
-    async function answerS4(code) {
-      s4reaction.value = s4reactions[code];
-      s4answered.value = true;
-    }
-
     async function answerS7(year) {
       s7reaction.value = s7reactions[year];
       s7answered.value = true;
     }
 
-    // render authors chart — guard against double render
+    // authors chart — guard against double render
     async function renderAuthorsChart() {
       const el = document.getElementById('chart-s9');
       if (!el || el.dataset.rendered) return;
@@ -397,13 +439,14 @@ createApp({
       if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 400); }
       if (val === 5) { await nextTick(); setTimeout(renderLineChart, 400); }
       if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 400); }
-      // pre-render authors on screen 8 so screen 9 has no layout jump
       if (val === 8) { await nextTick(); setTimeout(renderAuthorsChart, 400); }
       if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 400); }
     });
 
     return {
-      screen, count, word, comment, change,
+      screen,
+      count, word, comment, change,
+      count12, word12, comment12, change12,
       s4answered, s4reaction, s4options, answerS4,
       s7answered, s7reaction, s7shared, s7options, answerS7
     };
