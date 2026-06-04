@@ -4,9 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RESHETO: Przekłady na polskim rynku książki</title>
+  <meta name="description" content="Dane o przekładach na polskim rynku książki w latach 2000–2025. Kto jest tłumaczony, a czyje głosy nie docierają do polskich czytelników?">
+
+  <meta property="og:title" content="resheto — przekłady na polskim rynku książki">
+  <meta property="og:description" content="Dane o przekładach na polskim rynku książki w latach 2000–2025. Kto jest tłumaczony, a czyje głosy nie docierają do polskich czytelników?">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ni4yja.github.io/re-she-to/">
+  <meta property="og:image" content="https://ni4yja.github.io/re-she-to/og-image.png">
+  <meta property="og:locale" content="pl_PL">
+
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
   <script src="animations.js"></script>
+  <link rel="icon" type="image/svg+xml" href="https://api.iconify.design/streamline-freehand-color:presentation-projector-screen-bars.svg?color=%23888888">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -108,7 +118,7 @@
     <!-- screen 5: line chart top 5 -->
     <div class="screen" v-else-if="screen === 5" key="s5">
       <div class="inner wide">
-        <p class="title">A jak to wyglądało przez 25 lat?</p>
+        <p class="title">A tak to wyglądało przez 25 lat:</p>
         <div id="chart-s5"></div>
         <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
         <div class="nav nav--mt">
@@ -220,7 +230,7 @@
       <div class="inner">
         <h2 class="title">Książki, których już nie przeczytasz. Ich autorów zabiła Rosja.</h2>
         <div class="divider"></div>
-        <div class="big-number">289</div>
+        <div class="big-number">289 osób</div>
         <p class="next-body">Projekt „Niedopisani” dokumentuje ofiary z kręgu literatury — pisarzy, poetów, tłumaczy, redaktorów, wydawców, bibliotekarzy i badaczy. Od 2014 roku ukraińska kultura traci nie tylko ludzi. Traci głosy, których już nikt nie zastąpi.</p>
         <p class="next-body"><a class="source-link" href="https://www.facebook.com/nedopysani.project/" target="_blank">Недописані</a></p>
         <div class="nav nav--mt-2">
