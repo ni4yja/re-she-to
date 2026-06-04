@@ -29,6 +29,18 @@ body {
   min-height: 100vh;
 }
 
+/* ── animations ──────────────────────────────────────────────── */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 /* ── layout ──────────────────────────────────────────────── */
 
 .screen {
@@ -341,6 +353,10 @@ body {
 }
 
 /* ── screen 9: authors lollipop ──────────────────────────── */
+
+#chart-s9 {
+  min-height: 320px;
+}
 
 .s9-col-heads {
   display: flex;

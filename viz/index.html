@@ -6,7 +6,7 @@
   <title>RESHETO: Przekłady na polskim rynku książki</title>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6.16/dist/plot.umd.min.js"></script>
+  <script src="animations.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500&family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -26,178 +26,196 @@
 </nav>
 
 <div id="app">
+  <transition name="fade" mode="out-in">
 
-  <!-- screen 1: counter -->
-  <div class="screen" v-if="screen === 1" key="s1">
-    <div class="inner">
-      <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
-      <p class="subtitle">Tylko szczere odpowiedzi.</p>
-      <div class="divider"></div>
-      <div class="counter-row">
-        <button class="cbtn" @click="change(-1)" :disabled="count === 0" aria-label="mniej">−</button>
-        <div>
-          <div class="cnum">{{ count }}</div>
-          <div class="cword">{{ word }}</div>
+    <!-- screen 1: counter -->
+    <div class="screen" v-if="screen === 1" key="s1">
+      <div class="inner">
+        <h1 class="title">Ile książek przeczytałeś/-aś w 2025?</h1>
+        <p class="subtitle">Tylko szczere odpowiedzi.</p>
+        <div class="divider"></div>
+        <div class="counter-row">
+          <button class="cbtn" @click="change(-1)" :disabled="count === 0" aria-label="mniej">−</button>
+          <div>
+            <div class="cnum">{{ count }}</div>
+            <div class="cword">{{ word }}</div>
+          </div>
+          <button class="cbtn" @click="change(1)" :disabled="count === 10" aria-label="więcej">+</button>
         </div>
-        <button class="cbtn" @click="change(1)" :disabled="count === 10" aria-label="więcej">+</button>
-      </div>
-      <p class="comment">{{ comment }}</p>
-      <div class="nav">
-        <button class="nbtn primary" @click="screen = 2">dalej →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- screen 2: context -->
-  <div class="screen" v-else-if="screen === 2" key="s2">
-    <div class="inner">
-      <p class="next-title">
-        W 2025 roku co najmniej jedną książkę przeczytało 41% respondentów badania Biblioteki Narodowej. 59% — żadnej.
-        <a class="source-link" href="https://bn.org.pl/aktualnosci/6010-wskazniki-czytelnictwa-w-polsce-na-stabilnym-poziomie-najnowsze-badania-biblioteki-narodowej.html" target="_blank">(Biblioteka Narodowa, kwiecień 2026)</a>
-      </p>
-      <p class="next-body">Ale jeśli już czytasz — skąd pochodzi ta książka? W Polsce co roku ukazuje się ponad 10 000 tytułów w tłumaczeniu. Ktoś zdecydował, które z nich trafią na półki.</p>
-      <p class="next-body">Sprawdźmy — kto i jak.</p>
-      <div class="nav">
-        <button class="nbtn back" @click="screen = 1">← wróć</button>
-        <button class="nbtn primary" @click="screen = 3">dalej →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- screen 3: one number -->
-  <div class="screen" v-else-if="screen === 3" key="s3">
-    <div class="inner">
-      <p class="subtitle">Zanim zaczniemy — jedna liczba.</p>
-      <div class="divider"></div>
-      <div class="big-number">58.8%</div>
-      <p class="next-body">Ponad połowa przetłumaczonych książek wydanych w Polsce w 2025 roku pochodzi z języka angielskiego.</p>
-      <p class="next-body">A co z resztą świata?</p>
-      <div class="nav">
-        <button class="nbtn back" @click="screen = 2">← wróć</button>
-        <button class="nbtn primary" @click="screen = 4">dalej →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- screen 4: question + bar chart -->
-  <div class="screen" v-else-if="screen === 4" key="s4">
-    <div class="inner wide">
-      <div v-if="!s4answered">
-        <p class="title">Jaki język jest na drugim miejscu po angielskim w 2025 roku?</p>
-        <p class="subtitle subtitle--quiz">Jeden wybór.</p>
-        <div class="options">
-          <button class="option-btn" v-for="opt in s4options" :key="opt.code" @click="answerS4(opt.code)">{{ opt.label }}</button>
-        </div>
-        <div class="nav nav--mt-2">
-          <button class="nbtn back" @click="screen = 3">← wróć</button>
-        </div>
-      </div>
-      <div v-else>
-        <p class="s4-reaction">{{ s4reaction }}</p>
-        <div id="chart-s4"></div>
-        <p class="chart-source">Źródło: Biblioteka Narodowa · 2025</p>
-        <div class="nav nav--mt">
-          <button class="nbtn back" @click="screen = 3">← wróć</button>
-          <button class="nbtn primary" @click="screen = 5">dalej →</button>
+        <p class="comment">{{ comment }}</p>
+        <div class="nav">
+          <button class="nbtn primary" @click="screen = 2">dalej →</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- screen 5: line chart top 5 -->
-  <div class="screen" v-else-if="screen === 5" key="s5">
-    <div class="inner wide">
-      <p class="title">A jak to wyglądało przez 25 lat?</p>
-      <div id="chart-s5"></div>
-      <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
-      <div class="nav nav--mt">
-        <button class="nbtn back" @click="screen = 4">← wróć</button>
-        <button class="nbtn primary" @click="screen = 6">dalej →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- screen 6: Russian context -->
-  <div class="screen" v-else-if="screen === 6" key="s6">
-    <div class="inner">
-      <h2 class="title">No dobra. A co w końcu z tym rosyjskim?</h2>
-      <p class="next-body next-body--mt">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
-      <p class="next-body">Polski rynek książki zareagował.</p>
-      <div class="nav nav--mt-2">
-        <button class="nbtn back" @click="screen = 5">← wróć</button>
-        <button class="nbtn primary" @click="screen = 7">dalej →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- screen 7: question ukr vs rus + chart -->
-  <div class="screen" v-else-if="screen === 7" key="s7">
-    <div class="inner wide">
-      <div v-if="!s7answered">
-        <p class="title">W którym roku ukraiński po raz pierwszy wyprzedził rosyjski pod względem liczby wydanych tytułów?</p>
-        <p class="subtitle subtitle--quiz">Jeden wybór.</p>
-        <div class="options">
-          <button class="option-btn" v-for="opt in s7options" :key="opt.year" @click="answerS7(opt.year)">{{ opt.year }}</button>
-        </div>
-        <div class="nav nav--mt-2">
-          <button class="nbtn back" @click="screen = 6">← wróć</button>
+    <!-- screen 2: context -->
+    <div class="screen" v-else-if="screen === 2" key="s2">
+      <div class="inner">
+        <p class="next-title">
+          W 2025 roku co najmniej jedną książkę przeczytało 41% respondentów badania Biblioteki Narodowej. 59% — żadnej.
+          <a class="source-link" href="https://bn.org.pl/aktualnosci/6010-wskazniki-czytelnictwa-w-polsce-na-stabilnym-poziomie-najnowsze-badania-biblioteki-narodowej.html" target="_blank">(Biblioteka Narodowa, kwiecień 2026)</a>
+        </p>
+        <p class="next-body">Ale jeśli już czytasz — skąd pochodzi ta książka? W Polsce co roku ukazuje się ponad 10 000 tytułów w tłumaczeniu. Ktoś zdecydował, które z nich trafią na półki.</p>
+        <p class="next-body">Sprawdźmy — kto i jak.</p>
+        <div class="nav">
+          <button class="nbtn back" @click="screen = 1">← wróć</button>
+          <button class="nbtn primary" @click="screen = 3">dalej →</button>
         </div>
       </div>
-      <div v-else>
-        <p class="s4-reaction">{{ s7reaction }}</p>
-        <p class="next-body next-body--shared">{{ s7shared }}</p>
-        <div id="chart-s7"></div>
+    </div>
+
+    <!-- screen 3: one number -->
+    <div class="screen" v-else-if="screen === 3" key="s3">
+      <div class="inner">
+        <p class="subtitle">Zanim zaczniemy — jedna liczba.</p>
+        <div class="divider"></div>
+        <div class="big-number">58.8%</div>
+        <p class="next-body">Ponad połowa przetłumaczonych książek wydanych w Polsce w 2025 roku pochodzi z języka angielskiego.</p>
+        <p class="next-body">A co z resztą świata?</p>
+        <div class="nav">
+          <button class="nbtn back" @click="screen = 2">← wróć</button>
+          <button class="nbtn primary" @click="screen = 4">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 4: question + bar chart -->
+    <div class="screen" v-else-if="screen === 4" key="s4">
+      <div class="inner wide">
+        <div v-if="!s4answered">
+          <p class="title">Jaki język jest na drugim miejscu po angielskim w 2025 roku?</p>
+          <p class="subtitle subtitle--quiz">Jeden wybór.</p>
+          <div class="options">
+            <button class="option-btn" v-for="opt in s4options" :key="opt.code" @click="answerS4(opt.code)">{{ opt.label }}</button>
+          </div>
+          <div class="nav nav--mt-2">
+            <button class="nbtn back" @click="screen = 3">← wróć</button>
+          </div>
+        </div>
+        <div v-else>
+          <p class="s4-reaction">{{ s4reaction }}</p>
+          <div id="chart-s4"></div>
+          <p class="chart-source">Źródło: Biblioteka Narodowa · 2025</p>
+          <div class="nav nav--mt">
+            <button class="nbtn back" @click="screen = 3">← wróć</button>
+            <button class="nbtn primary" @click="screen = 5">dalej →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 5: line chart top 5 -->
+    <div class="screen" v-else-if="screen === 5" key="s5">
+      <div class="inner wide">
+        <p class="title">A jak to wyglądało przez 25 lat?</p>
+        <div id="chart-s5"></div>
         <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
         <div class="nav nav--mt">
-          <button class="nbtn back" @click="screen = 6">← wróć</button>
-          <button class="nbtn primary" @click="screen = 8">dalej →</button>
+          <button class="nbtn back" @click="screen = 4">← wróć</button>
+          <button class="nbtn primary" @click="screen = 6">dalej →</button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- screen 8: publishers -->
-  <div class="screen" v-else-if="screen === 8" key="s8">
-    <div class="inner wide">
-      <h2 class="title">Wydawnictwo to tylko biznes?</h2>
-      <p class="next-body next-body--intro">W 2025 roku te wydawnictwa wydały książki tłumaczone z języka ukraińskiego i rosyjskiego.</p>
-      <div id="pub-cols" class="pub-cols"></div>
-      <p class="chart-source chart-source--mt">Źródło: Biblioteka Narodowa · 2025</p>
-      <div class="nav nav--mt">
-        <button class="nbtn back" @click="screen = 7">← wróć</button>
-        <button class="nbtn primary" @click="screen = 9">dalej →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- screen 9: authors lollipop -->
-  <div class="screen" v-else-if="screen === 9" key="s9">
-    <div class="inner wide">
-      <h2 class="title">Klasyka i kryminały. Żywi autorzy.</h2>
-      <p class="next-body next-body--intro">Najchętniej tłumaczeni autorzy/autorki z rosyjskiego i ukraińskiego w ciągu ostatnich 25 lat.</p>
-      <div class="s9-col-heads">
-        <div class="s9-col-head s9-col-head--count">tyt.</div>
-        <div class="s9-col-head s9-col-head--bar">rok urodzenia →</div>
-        <div class="s9-col-head s9-col-head--name">autor/autorka</div>
-      </div>
-
-      <div id="chart-s9"></div>
-      <div class="s9-legend">
-        <div class="s9-legend-item">
-          <span class="s9-legend-dot s9-legend-dot--ukr"></span>z ukraińskiego
-        </div>
-        <div class="s9-legend-item">
-          <span class="s9-legend-dot s9-legend-dot--rus"></span>z rosyjskiego
+    <!-- screen 6: Russian context -->
+    <div class="screen" v-else-if="screen === 6" key="s6">
+      <div class="inner">
+        <h2 class="title">No dobra. A co w końcu z tym rosyjskim?</h2>
+        <p class="next-body next-body--mt">Przez 25 lat rosyjski był stałym elementem polskiego rynku przekładów. Dopóki Rosja nie rozpoczęła pełnoskalowej wojny przeciwko Ukrainie.</p>
+        <p class="next-body">Polski rynek książki zareagował.</p>
+        <div class="nav nav--mt-2">
+          <button class="nbtn back" @click="screen = 5">← wróć</button>
+          <button class="nbtn primary" @click="screen = 7">dalej →</button>
         </div>
       </div>
-      <p class="chart-source chart-source--mt">Źródło: Biblioteka Narodowa · 2000–2025</p>
-      <div class="nav nav--mt">
-        <button class="nbtn back" @click="screen = 8">← wróć</button>
-        <button class="nbtn primary" @click="screen = 10">dalej →</button>
+    </div>
+
+    <!-- screen 7: question ukr vs rus + chart -->
+    <div class="screen" v-else-if="screen === 7" key="s7">
+      <div class="inner wide">
+        <div v-if="!s7answered">
+          <p class="title">W którym roku ukraiński po raz pierwszy wyprzedził rosyjski pod względem liczby wydanych tytułów?</p>
+          <p class="subtitle subtitle--quiz">Jeden wybór.</p>
+          <div class="options">
+            <button class="option-btn" v-for="opt in s7options" :key="opt.year" @click="answerS7(opt.year)">{{ opt.year }}</button>
+          </div>
+          <div class="nav nav--mt-2">
+            <button class="nbtn back" @click="screen = 6">← wróć</button>
+          </div>
+        </div>
+        <div v-else>
+          <p class="s4-reaction">{{ s7reaction }}</p>
+          <p class="next-body next-body--shared">{{ s7shared }}</p>
+          <div id="chart-s7"></div>
+          <p class="chart-source">Źródło: Biblioteka Narodowa · 2000–2025</p>
+          <div class="nav nav--mt">
+            <button class="nbtn back" @click="screen = 6">← wróć</button>
+            <button class="nbtn primary" @click="screen = 8">dalej →</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
+    <!-- screen 8: publishers — hardcoded, no JS render -->
+    <div class="screen" v-else-if="screen === 8" key="s8">
+      <div class="inner wide">
+        <h2 class="title">Wydawnictwo to tylko biznes?</h2>
+        <p class="next-body next-body--intro">W 2025 roku te wydawnictwa wydały książki tłumaczone z języka ukraińskiego i rosyjskiego.</p>
+        <div class="pub-cols">
+          <div>
+            <p class="pub-head pub-head--ukr">Z ukraińskiego</p>
+            <div class="pub-item"><span class="pub-name">Warsztaty Kultury</span><span class="pub-count">9</span></div>
+            <div class="pub-item"><span class="pub-name">Timof Comics</span><span class="pub-count">2</span></div>
+            <div class="pub-item"><span class="pub-name">Pogranicze</span><span class="pub-count">2</span></div>
+            <div class="pub-item"><span class="pub-name">Wydawnictwo Czarne</span><span class="pub-count">2</span></div>
+            <div class="pub-item"><span class="pub-name">KEW</span><span class="pub-count">2</span></div>
+          </div>
+          <div>
+            <p class="pub-head pub-head--rus">Z rosyjskiego</p>
+            <div class="pub-item"><span class="pub-name">Świat Książki</span><span class="pub-count">15</span></div>
+            <div class="pub-item"><span class="pub-name">Państwowy Instytut Wydawniczy</span><span class="pub-count">6</span></div>
+            <div class="pub-item"><span class="pub-name">Oficyna Wydawnicza ABA</span><span class="pub-count">5</span></div>
+            <div class="pub-item"><span class="pub-name">Stalker Books</span><span class="pub-count">4</span></div>
+            <div class="pub-item"><span class="pub-name">Insignis</span><span class="pub-count">4</span></div>
+          </div>
+        </div>
+        <p class="chart-source chart-source--mt">Źródło: Biblioteka Narodowa · 2025</p>
+        <div class="nav nav--mt">
+          <button class="nbtn back" @click="screen = 7">← wróć</button>
+          <button class="nbtn primary" @click="screen = 9">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 9: authors lollipop -->
+    <div class="screen" v-else-if="screen === 9" key="s9">
+      <div class="inner wide">
+        <h2 class="title">Klasyka i kryminały. Żywi autorzy.</h2>
+        <p class="next-body next-body--intro">Najchętniej tłumaczeni autorzy/autorki z rosyjskiego i ukraińskiego w ciągu ostatnich 25 lat.</p>
+        <div class="s9-col-heads">
+          <div class="s9-col-head s9-col-head--count">tyt.</div>
+          <div class="s9-col-head s9-col-head--bar">rok urodzenia →</div>
+          <div class="s9-col-head s9-col-head--name">autor/autorka</div>
+        </div>
+        <div id="chart-s9"></div>
+        <div class="s9-legend">
+          <div class="s9-legend-item">
+            <span class="s9-legend-dot s9-legend-dot--ukr"></span>z ukraińskiego
+          </div>
+          <div class="s9-legend-item">
+            <span class="s9-legend-dot s9-legend-dot--rus"></span>z rosyjskiego
+          </div>
+        </div>
+        <p class="chart-source chart-source--mt">Źródło: Biblioteka Narodowa · 2000–2025</p>
+        <div class="nav nav--mt">
+          <button class="nbtn back" @click="screen = 8">← wróć</button>
+          <button class="nbtn primary" @click="screen = 10">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+  </transition>
 </div>
 
 <script>
@@ -278,125 +296,11 @@ createApp({
       s7answered.value = true;
     }
 
-    watch(s4answered, async (val) => {
-      if (val) { await nextTick(); setTimeout(renderBarChart, 50); }
-    });
-
-    watch(s7answered, async (val) => {
-      if (val) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
-    });
-
-    watch(screen, async (val) => {
-      if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 50); }
-      if (val === 5) { await nextTick(); setTimeout(renderLineChart, 50); }
-      if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 50); }
-      if (val === 8) { await nextTick(); setTimeout(renderPublishersChart, 50); }
-      if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 50); }
-    });
-
-    async function renderBarChart() {
-      const res = await fetch('data/top_languages.json');
-      const langs = await res.json();
-      const top5 = langs.slice(0, 5);
-      const el = document.getElementById('chart-s4');
-      if (!el) return;
-      el.innerHTML = '';
-      const chart = Plot.plot({
-        marginLeft: 110, marginRight: 70, marginTop: 10, marginBottom: 20, height: 240,
-        style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
-        x: { label: null, tickFormat: d => d + '%', grid: true },
-        y: { label: null, domain: [...top5].sort((a,b) => a.percent_2025 - b.percent_2025).map(d => d.name) },
-        marks: [
-          Plot.barX(top5, { x: 'percent_2025', y: 'name', fill: d => d.code === 'eng' ? '#3D3B8E' : '#9896C8', rx: 2 }),
-          Plot.text(top5, { x: 'percent_2025', y: 'name', text: d => d.percent_2025 + '%', dx: 6, textAnchor: 'start', fill: '#1a1a1a', fontSize: 12 }),
-          Plot.ruleX([0]),
-        ],
-      });
-      el.appendChild(chart);
-    }
-
-    async function renderLineChart() {
-      const res = await fetch('data/top5_by_year.json');
-      const lineData = await res.json();
-      const el = document.getElementById('chart-s5');
-      if (!el) return;
-      el.innerHTML = '';
-      const colors = { 'japoński': '#3D3B8E', 'francuski': '#D85A30', 'niemiecki': '#1D9E75', 'włoski': '#BA7517' };
-      const filtered = lineData.filter(d => d.name !== 'hiszpański');
-      const parsed = filtered.map(d => ({ ...d, year: +d.year }));
-      const chart = Plot.plot({
-        marginLeft: 50, marginRight: 90, marginTop: 20, marginBottom: 30, height: 300,
-        style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
-        x: { label: null, tickFormat: d => d % 5 === 0 ? String(d) : '' },
-        y: { label: '%', grid: true },
-        marks: [
-          Plot.line(parsed, { x: 'year', y: 'percent', stroke: d => colors[d.name] || '#ccc', strokeWidth: 2 }),
-          Plot.text(parsed.filter(d => d.year === 2025), { x: 'year', y: 'percent', text: 'name', dx: 6, textAnchor: 'start', fill: d => colors[d.name] || '#888', fontSize: 11 }),
-        ],
-      });
-      el.appendChild(chart);
-    }
-
-    async function renderUkrRusChart() {
-      const res = await fetch('data/ukr_rus_by_year.json');
-      const data = await res.json();
-      const el = document.getElementById('chart-s7');
-      if (!el) return;
-      el.innerHTML = '';
-      const flat = [];
-      data.forEach(d => {
-        if (d.year && /^\d{4}$/.test(d.year)) {
-          flat.push({ year: +d.year, count: d.ukr || 0, lang: 'ukraiński' });
-          flat.push({ year: +d.year, count: d.rus || 0, lang: 'rosyjski' });
-        }
-      });
-      const data2025 = flat.filter(d => d.year === 2025);
-      const chart = Plot.plot({
-        marginLeft: 50, marginRight: 110, marginTop: 20, marginBottom: 30, height: 300,
-        style: { fontFamily: 'Inter, sans-serif', fontSize: '13px', background: 'transparent', color: '#1a1a1a' },
-        x: { label: null, tickFormat: d => d % 5 === 0 ? String(d) : '' },
-        y: { label: 'tytuły', grid: true },
-        marks: [
-          Plot.ruleX([2022], { stroke: '#e03c31', strokeWidth: 1, strokeDasharray: '4 2' }),
-          Plot.line(flat, { x: 'year', y: 'count', stroke: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#ccc', strokeWidth: 2 }),
-          Plot.text(data2025, { x: 'year', y: 'count', text: d => `${d.lang} (${d.count})`, dx: 6, textAnchor: 'start', fill: d => d.lang === 'ukraiński' ? '#3D3B8E' : '#aaa', fontSize: 11 }),
-        ],
-      });
-      el.appendChild(chart);
-    }
-
-    async function renderPublishersChart() {
-      const el = document.getElementById('pub-cols');
-      if (!el) return;
-      el.innerHTML = '';
-
-      const res = await fetch('data/publishers.json');
-      const publishers = await res.json();
-
-      const groups = [
-        { lang: 'ukr', label: 'Z ukraińskiego', cls: 'pub-head--ukr' },
-        { lang: 'rus', label: 'Z rosyjskiego', cls: 'pub-head--rus' },
-      ];
-
-      groups.forEach(({ lang, label, cls }) => {
-        const col = document.createElement('div');
-        const head = document.createElement('p');
-        head.className = `pub-head ${cls}`;
-        head.textContent = label;
-        col.appendChild(head);
-        publishers.filter(p => p.lang === lang).forEach(p => {
-          const item = document.createElement('div');
-          item.className = 'pub-item';
-          item.innerHTML = `<span class="pub-name">${p.name}</span><span class="pub-count">${p.count}</span>`;
-          col.appendChild(item);
-        });
-        el.appendChild(col);
-      });
-    }
-
+    // render authors chart — guard against double render
     async function renderAuthorsChart() {
       const el = document.getElementById('chart-s9');
-      if (!el) return;
+      if (!el || el.dataset.rendered) return;
+      el.dataset.rendered = '1';
       el.innerHTML = '';
 
       const res = await fetch('data/authors.json');
@@ -406,7 +310,7 @@ createApp({
       const minBorn = Math.min(...authors.map(a => a.born));
       const maxBorn = Math.max(...authors.map(a => a.born));
 
-      sorted.forEach(a => {
+      sorted.forEach((a, i) => {
         const pct = (a.born - minBorn) / (maxBorn - minBorn);
         const dotPct = Math.round(pct * 100);
         const linePct = 100 - dotPct;
@@ -415,6 +319,8 @@ createApp({
 
         const row = document.createElement('div');
         row.className = 's9-row';
+        row.style.opacity = '0';
+        row.style.transform = 'translateY(6px)';
         row.innerHTML = `
           <div class="s9-count s9-count--${langCls}">${a.count}</div>
           <div class="s9-bar">
@@ -427,10 +333,39 @@ createApp({
             <div class="s9-years">${yearsStr}</div>
           </div>`;
         el.appendChild(row);
+
+        setTimeout(() => {
+          row.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+          row.style.opacity = '1';
+          row.style.transform = 'translateY(0)';
+        }, i * 50);
       });
     }
 
-    return { screen, count, word, comment, change, s4answered, s4reaction, s4options, answerS4, s7answered, s7reaction, s7shared, s7options, answerS7 };
+    watch(s4answered, async (val) => {
+      if (val) { await nextTick(); setTimeout(renderBarChart, 300); }
+    });
+
+    watch(s7answered, async (val) => {
+      if (val) { await nextTick(); setTimeout(renderUkrRusChart, 300); }
+    });
+
+    watch(screen, async (val) => {
+      await nextTick();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 300); }
+      if (val === 5) { await nextTick(); setTimeout(renderLineChart, 300); }
+      if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 300); }
+      // pre-render authors on screen 8 so screen 9 has no layout jump
+      if (val === 8) { await nextTick(); setTimeout(renderAuthorsChart, 300); }
+      if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 300); }
+    });
+
+    return {
+      screen, count, word, comment, change,
+      s4answered, s4reaction, s4options, answerS4,
+      s7answered, s7reaction, s7shared, s7options, answerS7
+    };
   }
 }).mount('#app');
 </script>
