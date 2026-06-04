@@ -460,6 +460,22 @@ body {
   flex-shrink: 0;
 }
 
+/* ── screen 11: amelina ──────────────────────────────────── */
+
+.s11-separator {
+  width: 32px;
+  height: 1px;
+  background: var(--border);
+  margin: 2rem 0 1.25rem;
+}
+
+.s11-book-title {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 0.5rem;
+}
+
 /* ── modifiers: spacing ──────────────────────────────────── */
 
 .subtitle--quiz    { margin-bottom: 2rem; }

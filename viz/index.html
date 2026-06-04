@@ -215,6 +215,37 @@
       </div>
     </div>
 
+    <!-- screen 10: niedopisani -->
+    <div class="screen" v-else-if="screen === 10" key="s10">
+      <div class="inner">
+        <h2 class="title">Książki, których już nie przeczytasz. Ich autorów zabiła Rosja.</h2>
+        <div class="divider"></div>
+        <div class="big-number">289</div>
+        <p class="next-body">Projekt „Niedopisani” dokumentuje ofiary z kręgu literatury — pisarzy, poetów, tłumaczy, redaktorów, wydawców, bibliotekarzy i badaczy. Od 2014 roku ukraińska kultura traci nie tylko ludzi. Traci głosy, których już nikt nie zastąpi.</p>
+        <p class="next-body"><a class="source-link" href="https://www.facebook.com/nedopysani.project/" target="_blank">Недописані</a></p>
+        <div class="nav nav--mt-2">
+          <button class="nbtn back" @click="screen = 9">← wróć</button>
+          <button class="nbtn primary" @click="screen = 11">dalej →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- screen 11: amelina -->
+    <div class="screen" v-else-if="screen === 11" key="s11">
+      <div class="inner">
+        <h2 class="title">Wiktoria Amelina.</h2>
+        <div class="divider"></div>
+        <p class="next-body">Ukraińska pisarka i poetka. Po wybuchu pełnoskalowej inwazji zaczęła dokumentować zbrodnie wojenne. Zginęła od rosyjskiej rakiety w 2023 roku, w wieku 37 lat.</p>
+        <p class="next-body">Jej książka — zredagowana przez przyjaciół i męża — ukazała się pośmiertnie. W 2026 roku wyszło polskie tłumaczenie, autorstwa Hanny Pustuły-Lewickiej. Wstęp napisała Margaret Atwood.</p>
+        <div class="s11-separator"></div>
+        <p class="s11-book-title">Patrząc na kobiety, patrząc na wojnę · Wydawnictwo Krytyki Politycznej · 2026</p>
+        <a class="source-link" href="https://krytykapolityczna.pl/wydawnictwo/patrzac-na-kobiety-patrzac-na-wojne-wiktoria-amelina/" target="_blank">krytykapolityczna.pl</a>
+        <div class="nav nav--mt-2">
+          <button class="nbtn back" @click="screen = 10">← wróć</button>
+        </div>
+      </div>
+    </div>
+
   </transition>
 </div>
 
@@ -343,22 +374,22 @@ createApp({
     }
 
     watch(s4answered, async (val) => {
-      if (val) { await nextTick(); setTimeout(renderBarChart, 300); }
+      if (val) { await nextTick(); setTimeout(renderBarChart, 400); }
     });
 
     watch(s7answered, async (val) => {
-      if (val) { await nextTick(); setTimeout(renderUkrRusChart, 300); }
+      if (val) { await nextTick(); setTimeout(renderUkrRusChart, 400); }
     });
 
     watch(screen, async (val) => {
       await nextTick();
       window.scrollTo({ top: 0, behavior: 'instant' });
-      if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 300); }
-      if (val === 5) { await nextTick(); setTimeout(renderLineChart, 300); }
-      if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 300); }
+      if (val === 4 && s4answered.value) { await nextTick(); setTimeout(renderBarChart, 400); }
+      if (val === 5) { await nextTick(); setTimeout(renderLineChart, 400); }
+      if (val === 7 && s7answered.value) { await nextTick(); setTimeout(renderUkrRusChart, 400); }
       // pre-render authors on screen 8 so screen 9 has no layout jump
-      if (val === 8) { await nextTick(); setTimeout(renderAuthorsChart, 300); }
-      if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 300); }
+      if (val === 8) { await nextTick(); setTimeout(renderAuthorsChart, 400); }
+      if (val === 9) { await nextTick(); setTimeout(renderAuthorsChart, 400); }
     });
 
     return {
