@@ -15,7 +15,7 @@ df_clean = df[
     (df['year'] <= '2025')
 ].copy()
 
-output_dir = '../viz/data'
+output_dir = '../data'
 os.makedirs(output_dir, exist_ok=True)
 
 lang_names = {

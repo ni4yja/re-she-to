@@ -504,3 +504,19 @@ body {
 .s9-count--rus      { color: var(--muted); }
 .s9-dot--ukr        { background: var(--accent); }
 .s9-dot--rus        { background: var(--muted-warm); }
+
+/* ── mobile ──────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .navbar {
+    padding: 0 1rem;
+  }
+
+  .navbar-desc {
+    display: none;
+  }
+
+  .navbar-links {
+    gap: 12px;
+  }
+}

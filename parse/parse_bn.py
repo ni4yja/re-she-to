@@ -49,3 +49,15 @@ print(df["lang_original"].value_counts().head(20))
 
 df.to_csv(OUTPUT_FILE, index=False, encoding="utf-8")
 print(f"\nSaved to {OUTPUT_FILE}")
+
+# filter 2000-2025 and save as separate file
+FILTERED_FILE = os.path.join(BASE_DIR, "data", "bn_translations_2000_2025.csv")
+
+df['year'] = df['year'].astype(str)
+df_filtered = df[
+    (df['year'].str.match(r'^\d{4}$', na=False)) &
+    (df['year'] >= '2000') &
+    (df['year'] <= '2025')
+]
+df_filtered.to_csv(FILTERED_FILE, index=False, encoding='utf-8')
+print(f'Saved bn_translations_2000_2025.csv ({len(df_filtered)} records)')
