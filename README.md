@@ -3,6 +3,8 @@
 An interactive data story exploring translation flows in the Polish book market (2000–2025).  
 Who gets translated? Whose voices reach Polish readers — and whose don't?
 
+![resheto demo](demo.gif)
+
 🔗 [ni4yja.github.io/re-she-to](https://ni4yja.github.io/re-she-to/)
 
 ---
